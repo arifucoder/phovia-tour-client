@@ -1,3 +1,4 @@
+import Logo from "@/assets/icons/Logo";
 import { Link } from "react-router";
 
 const footerSections = [
@@ -36,16 +37,7 @@ export default function Footer() {
 				<div className="grid grid-cols-1 gap-9 sm:grid-cols-2 lg:grid-cols-4">
 					{/* Brand */}
 					<div className="flex flex-col gap-3.5">
-						<Link to="/" className="flex items-center gap-2 text-foreground">
-							<svg width="24" height="28" viewBox="0 0 26 30" aria-hidden="true">
-								<path
-									d="M13 0C5.8 0 0 5.6 0 12.6 0 21.7 13 30 13 30s13-8.3 13-17.4C26 5.6 20.2 0 13 0z"
-									className="fill-primary"
-								/>
-								<circle cx="13" cy="12.5" r="5" className="fill-background" />
-							</svg>
-							<span className="text-xl font-bold">Phovia Tour</span>
-						</Link>
+						<Logo />
 						<p className="max-w-65 text-sm text-muted-foreground">
 							Guided tours across Bangladesh, booked and paid online in taka.
 						</p>
