@@ -1,44 +1,82 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "@fontsource-variable/geist";
+@import "@fontsource/poppins/400.css";
+@import "@fontsource/poppins/500.css";
+@import "@fontsource/poppins/600.css";
+@import "@fontsource/poppins/700.css";
+@import "@fontsource/poppins/800.css";
+@import "@fontsource/hind-siliguri/500.css";
+@import "@fontsource/hind-siliguri/600.css";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --font-heading: var(--font-sans);
-  --font-sans: 'Geist Variable', sans-serif;
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
-  --color-foreground: var(--foreground);
+  --font-sans: 'Poppins', 'Hind Siliguri', system-ui, sans-serif;
+
+  /* shadcn tokens */
   --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Extra tokens from the Phovia design (shadcn has no equivalent) */
+  --color-primary-hover: var(--primary-hover);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-destructive-soft: var(--destructive-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+
+  --color-soft: var(--soft);
+  --color-grid: var(--grid);
+  --color-pink: var(--pink);
+  --color-pink-soft: var(--pink-soft);
+  --color-yellow-soft: var(--yellow-soft);
+  --color-mint-soft: var(--mint-soft);
+  --color-star: var(--star);
+  --color-placeholder: var(--placeholder);
+  --color-placeholder-foreground: var(--placeholder-foreground);
+
+  --color-status-complete: var(--status-complete);
+  --color-status-pending: var(--status-pending);
+  --color-status-cancelled: var(--status-cancelled);
+  --color-status-failed: var(--status-failed);
+
+  --shadow-card: var(--shadow-card);
+
+  /* Radius: 10px buttons/inputs, 14px cards */
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -46,251 +84,156 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
-
-  /* Background & surface */
-  --color-phovia-bg: var(--phovia-bg);
-  --color-phovia-surface: var(--phovia-surface);
-  --color-phovia-surface2: var(--phovia-surface2);
-  --color-phovia-soft: var(--phovia-soft);
-  --color-phovia-line: var(--phovia-line);
-  --color-phovia-grid: var(--phovia-grid);
-
-  /* Text */
-  --color-phovia-ink: var(--phovia-ink);
-  --color-phovia-muted: var(--phovia-muted);
-
-  /* Brand */
-  --color-phovia-primary: var(--phovia-primary);
-  --color-phovia-primary-hover: var(--phovia-primary-hover);
-  --color-phovia-primary-ink: var(--phovia-primary-ink);
-  --color-phovia-primary-soft: var(--phovia-primary-soft);
-
-  /* Accent */
-  --color-phovia-accent-soft: var(--phovia-accent-soft);
-  --color-phovia-accent-text: var(--phovia-accent-text);
-
-  /* Soft tiles */
-  --color-phovia-pink-soft: var(--phovia-pink-soft);
-  --color-phovia-yellow-soft: var(--phovia-yellow-soft);
-  --color-phovia-mint-soft: var(--phovia-mint-soft);
-
-  /* Star & placeholder */
-  --color-phovia-star: var(--phovia-star);
-  --color-phovia-ph: var(--phovia-ph);
-  --color-phovia-ph-ink: var(--phovia-ph-ink);
-
-  /* Status */
-  --color-phovia-ok: var(--phovia-ok);
-  --color-phovia-ok-soft: var(--phovia-ok-soft);
-  --color-phovia-warn: var(--phovia-warn);
-  --color-phovia-warn-soft: var(--phovia-warn-soft);
-  --color-phovia-danger: var(--phovia-danger);
-  --color-phovia-danger-ink: var(--phovia-danger-ink);
-  --color-phovia-danger-soft: var(--phovia-danger-soft);
-  --color-phovia-info: var(--phovia-info);
-  --color-phovia-info-soft: var(--phovia-info-soft);
-
-  /* Booking status */
-  --color-phovia-s-complete: var(--phovia-s-complete);
-  --color-phovia-s-pending: var(--phovia-s-pending);
-  --color-phovia-s-cancelled: var(--phovia-s-cancelled);
-  --color-phovia-s-failed: var(--phovia-s-failed);
-
-  /* Chart */
-  --color-phovia-c1: var(--phovia-c1);
-  --color-phovia-c2: var(--phovia-c2);
-
-  /* Shadow — `--shadow-` দিয়ে শুরু হলে Tailwind shadow class বানায় */
-  --shadow-phovia: var(--phovia-shadow);
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
 
-  /* Background & surface */
-  --phovia-bg: #FFFFFF;
-  --phovia-surface: #FFFFFF;
-  --phovia-surface2: #F7F6FD;
-  --phovia-soft: #FFF3F5;
-  --phovia-line: #ECEAF5;
-  --phovia-grid: #EEECF6;
-
-  /* Text */
-  --phovia-ink: #1C1A3A;
-  --phovia-muted: #6A6785;
+  /* Surfaces & text */
+  --background: #FFFFFF;
+  --foreground: #1C1A3A;
+  --card: #FFFFFF;
+  --card-foreground: #1C1A3A;
+  --popover: #FFFFFF;
+  --popover-foreground: #1C1A3A;
+  --secondary: #F7F6FD;
+  --secondary-foreground: #1C1A3A;
+  --muted: #F7F6FD;
+  --muted-foreground: #6A6785;
+  --soft: #FFF3F5;
+  --grid: #EEECF6;
 
   /* Brand */
-  --phovia-primary: #5B4CF0;
-  --phovia-primary-hover: #4A3BD9;
-  --phovia-primary-ink: #FFFFFF;
-  --phovia-primary-soft: #EEEBFF;
+  --primary: #5B4CF0;
+  --primary-foreground: #FFFFFF;
+  --primary-hover: #4A3BD9;
+  --accent: #EEEBFF;
+  --accent-foreground: #5B4CF0;
 
-  /* Accent (pink) */
-  --phovia-accent-soft: #FFE8EC;
-  --phovia-accent-text: #B4335A;
+  /* Lines & focus */
+  --border: #ECEAF5;
+  --input: #ECEAF5;
+  --ring: #5B4CF0;
 
-  /* Soft tile backgrounds (icon tile, badge) */
-  --phovia-pink-soft: #FFE8EC;
-  --phovia-yellow-soft: #FFF4DC;
-  --phovia-mint-soft: #E3F7EF;
+  /* Status */
+  --destructive: #B42318;
+  --destructive-foreground: #FFFFFF;
+  --destructive-soft: #FDECEA;
+  --success: #17714A;
+  --success-soft: #E2F3EA;
+  --warning: #8F5400;
+  --warning-soft: #FFF0D4;
+  --info: #21539E;
+  --info-soft: #E5EDFA;
 
-  /* Rating star */
-  --phovia-star: #FFB547;
+  /* Icon tiles, rating, image placeholder */
+  --pink: #B4335A;
+  --pink-soft: #FFE8EC;
+  --yellow-soft: #FFF4DC;
+  --mint-soft: #E3F7EF;
+  --star: #FFB547;
+  --placeholder: #EEEBF8;
+  --placeholder-foreground: #8A86AE;
 
-  /* Image placeholder */
-  --phovia-ph: #EEEBF8;
-  --phovia-ph-ink: #8A86AE;
+  /* Booking status badges */
+  --status-complete: #2E8B57;
+  --status-pending: #D9A21B;
+  --status-cancelled: #9AA3A0;
+  --status-failed: #C8402F;
 
-  /* Status: success / warning / danger / info */
-  --phovia-ok: #17714A;
-  --phovia-ok-soft: #E2F3EA;
-  --phovia-warn: #8F5400;
-  --phovia-warn-soft: #FFF0D4;
-  --phovia-danger: #B42318;
-  --phovia-danger-ink: #FFFFFF;
-  --phovia-danger-soft: #FDECEA;
-  --phovia-info: #21539E;
-  --phovia-info-soft: #E5EDFA;
+  /* Charts */
+  --chart-1: #6152F0;
+  --chart-2: #D9771F;
+  --chart-3: #2E8B57;
+  --chart-4: #D9A21B;
+  --chart-5: #C8402F;
 
-  /* Booking status (admin badge) */
-  --phovia-s-complete: #2E8B57;
-  --phovia-s-pending: #D9A21B;
-  --phovia-s-cancelled: #9AA3A0;
-  --phovia-s-failed: #C8402F;
+  /* Admin sidebar */
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #1C1A3A;
+  --sidebar-primary: #5B4CF0;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #EEEBFF;
+  --sidebar-accent-foreground: #5B4CF0;
+  --sidebar-border: #ECEAF5;
+  --sidebar-ring: #5B4CF0;
 
-  /* Chart series */
-  --phovia-c1: #6152F0;
-  --phovia-c2: #D9771F;
-
-  /* Shadow */
-  --phovia-shadow: 0 12px 34px rgba(28, 26, 58, 0.08);
+  --shadow-card: 0 12px 34px rgba(28, 26, 58, 0.08);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
-
-
-  /* Background & surface */
-  --phovia-bg: #12111F;
-  --phovia-surface: #1B1A2E;
-  --phovia-surface2: #1F1D35;
-  --phovia-soft: #211B2E;
-  --phovia-line: #2E2B4A;
-  --phovia-grid: #2A2845;
-
-  /* Text */
-  --phovia-ink: #EEEDF7;
-  --phovia-muted: #A9A6C4;
+  /* Surfaces & text */
+  --background: #12111F;
+  --foreground: #EEEDF7;
+  --card: #1B1A2E;
+  --card-foreground: #EEEDF7;
+  --popover: #1B1A2E;
+  --popover-foreground: #EEEDF7;
+  --secondary: #1F1D35;
+  --secondary-foreground: #EEEDF7;
+  --muted: #1F1D35;
+  --muted-foreground: #A9A6C4;
+  --soft: #211B2E;
+  --grid: #2A2845;
 
   /* Brand */
-  --phovia-primary: #9D92FF;
-  --phovia-primary-hover: #B3AAFF;
-  --phovia-primary-ink: #14112E;
-  --phovia-primary-soft: #2A2550;
+  --primary: #9D92FF;
+  --primary-foreground: #14112E;
+  --primary-hover: #B3AAFF;
+  --accent: #2A2550;
+  --accent-foreground: #9D92FF;
 
-  /* Accent (pink) */
-  --phovia-accent-soft: #3A2230;
-  --phovia-accent-text: #FF9DB2;
-
-  /* Soft tile backgrounds */
-  --phovia-pink-soft: #3A2230;
-  --phovia-yellow-soft: #3A3020;
-  --phovia-mint-soft: #1D3530;
-
-  /* Rating star — dark-এও একই */
-  --phovia-star: #FFB547;
-
-  /* Image placeholder */
-  --phovia-ph: #26243F;
-  --phovia-ph-ink: #7E7AA6;
+  /* Lines & focus */
+  --border: #2E2B4A;
+  --input: #2E2B4A;
+  --ring: #9D92FF;
 
   /* Status */
-  --phovia-ok: #6DCB98;
-  --phovia-ok-soft: #14301F;
-  --phovia-warn: #F1C46E;
-  --phovia-warn-soft: #382B10;
-  --phovia-danger: #F28B80;
-  --phovia-danger-ink: #2A0E0B;
-  /* ডিজাইনে নেই — প্রস্তাবিত */
-  --phovia-danger-soft: #3B1916;
-  --phovia-info: #9DBBF0;
-  /* ডিজাইনে নেই — প্রস্তাবিত */
-  --phovia-info-soft: #172338;
-  /* ডিজাইনে নেই — প্রস্তাবিত */
+  --destructive: #F28B80;
+  --destructive-foreground: #2A0E0B;
+  --destructive-soft: #3B1916;
+  /* not in design, proposed */
+  --success: #6DCB98;
+  --success-soft: #14301F;
+  --warning: #F1C46E;
+  --warning-soft: #382B10;
+  --info: #9DBBF0;
+  --info-soft: #172338;
+  /* not in design, proposed */
 
-  /* Booking status */
-  --phovia-s-complete: #4FB67C;
-  --phovia-s-pending: #E2B23A;
-  --phovia-s-cancelled: #6E7A77;
-  --phovia-s-failed: #E0604E;
+  /* Icon tiles, rating, image placeholder */
+  --pink: #FF9DB2;
+  --pink-soft: #3A2230;
+  --yellow-soft: #3A3020;
+  --mint-soft: #1D3530;
+  --star: #FFB547;
+  --placeholder: #26243F;
+  --placeholder-foreground: #7E7AA6;
 
-  /* Chart series */
-  --phovia-c1: #7F73F5;
-  --phovia-c2: #D8762A;
+  /* Booking status badges */
+  --status-complete: #4FB67C;
+  --status-pending: #E2B23A;
+  --status-cancelled: #6E7A77;
+  --status-failed: #E0604E;
 
-  /* Shadow */
-  --phovia-shadow: 0 12px 34px rgba(0, 0, 0, 0.35);
+  /* Charts */
+  --chart-1: #7F73F5;
+  --chart-2: #D8762A;
+  --chart-3: #4FB67C;
+  --chart-4: #E2B23A;
+  --chart-5: #E0604E;
+
+  /* Admin sidebar */
+  --sidebar: #1B1A2E;
+  --sidebar-foreground: #EEEDF7;
+  --sidebar-primary: #9D92FF;
+  --sidebar-primary-foreground: #14112E;
+  --sidebar-accent: #2A2550;
+  --sidebar-accent-foreground: #9D92FF;
+  --sidebar-border: #2E2B4A;
+  --sidebar-ring: #9D92FF;
+
+  --shadow-card: 0 12px 34px rgba(0, 0, 0, 0.35);
 }
 
 @layer base {
@@ -303,6 +246,6 @@
   }
 
   html {
-    @apply font-sans;
+    @apply font-sans antialiased;
   }
 }
