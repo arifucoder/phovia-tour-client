@@ -3,10 +3,11 @@ import { buttonVariants } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { Menu } from "lucide-react";
-import { Link } from "react-router";
+import { Link, NavLink } from "react-router";
 
 const navLinks = [
 	{ label: "Home", href: "/" },
+	{ label: "About", href: "/about" },
 	{ label: "Tours", href: "/tours" },
 	{ label: "Divisions", href: "/divisions" },
 	{ label: "Short tours", href: "/tours?type=short" },
@@ -23,7 +24,7 @@ const outlineBtn = cn(
 	"h-11 rounded-lg border-primary text-[14.5px] font-medium text-primary hover:bg-accent hover:text-accent-foreground",
 );
 
-export default function Header() {
+export default function Navbar() {
 	return (
 		<header className="w-full bg-background">
 			<div className="mx-auto flex h-21 max-w-300 items-center justify-between gap-6 px-4 sm:px-10">
@@ -32,13 +33,13 @@ export default function Header() {
 				{/* Desktop nav */}
 				<nav aria-label="Main" className="hidden items-center gap-9 lg:flex">
 					{navLinks.map((link) => (
-						<Link
+						<NavLink
 							key={link.label}
 							to={link.href}
-							className="py-1.5 text-[14.5px] font-medium text-foreground transition-colors hover:text-primary"
+							className="relative py-1.5 text-[14.5px] font-medium text-foreground transition-colors hover:text-primary after:absolute after:-bottom-1 after:left-1/2 after:size-1.25 after:-translate-x-1/2 after:rounded-full after:bg-primary after:opacity-0 aria-[current=page]:after:opacity-100"
 						>
 							{link.label}
-						</Link>
+						</NavLink>
 					))}
 				</nav>
 
@@ -73,13 +74,13 @@ export default function Header() {
 							</SheetHeader>
 							<nav aria-label="Mobile" className="flex flex-col gap-1 px-4">
 								{navLinks.map((link) => (
-									<Link
+									<NavLink
 										key={link.label}
 										to={link.href}
-										className="rounded-lg px-3 py-2.5 text-[15px] font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+										className="rounded-lg px-3 py-2.5 text-[15px] font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground aria-[current=page]:bg-accent aria-[current=page]:text-accent-foreground"
 									>
 										{link.label}
-									</Link>
+									</NavLink>
 								))}
 							</nav>
 							<div className="mt-4 flex flex-col gap-3 px-4 sm:hidden">
