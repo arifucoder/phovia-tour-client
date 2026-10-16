@@ -27,6 +27,8 @@ const footerSections = [
 	},
 ];
 
+const linkClass = "text-sm text-muted-foreground transition-colors hover:text-primary";
+
 export default function Footer() {
 	return (
 		<footer className="w-full bg-background pb-7 pt-20">
@@ -38,9 +40,9 @@ export default function Footer() {
 							<svg width="24" height="28" viewBox="0 0 26 30" aria-hidden="true">
 								<path
 									d="M13 0C5.8 0 0 5.6 0 12.6 0 21.7 13 30 13 30s13-8.3 13-17.4C26 5.6 20.2 0 13 0z"
-									className="fill-phovia-primary"
+									className="fill-primary"
 								/>
-								<circle cx="13" cy="12.5" r="5" fill="#fff" />
+								<circle cx="13" cy="12.5" r="5" className="fill-background" />
 							</svg>
 							<span className="text-xl font-bold">Phovia Tour</span>
 						</Link>
@@ -54,11 +56,7 @@ export default function Footer() {
 						<nav key={section.title} aria-label={section.title} className="flex flex-col gap-3">
 							<strong className="text-[15px] font-semibold text-foreground">{section.title}</strong>
 							{section.links.map((link) => (
-								<Link
-									key={link.label}
-									to={link.href}
-									className="text-sm text-muted-foreground transition-colors hover:text-primary"
-								>
+								<Link key={link.label} to={link.href} className={linkClass}>
 									{link.label}
 								</Link>
 							))}
@@ -73,13 +71,13 @@ export default function Footer() {
 				</div>
 
 				{/* Bottom bar */}
-				<div className="flex flex-col gap-3 border-t pt-5.5 text-[13px] sm:flex-row sm:items-center sm:justify-between">
+				<div className="flex flex-col gap-3 border-t border-border pt-5.5 text-[13px] sm:flex-row sm:items-center sm:justify-between">
 					<span className="text-muted-foreground">© 2026 Phovia Tour. All rights reserved.</span>
 					<div className="flex gap-6">
-						<Link to="/terms" className="text-muted-foreground hover:text-primary">
+						<Link to="/terms" className="text-[13px] text-muted-foreground transition-colors hover:text-primary">
 							Terms of service
 						</Link>
-						<Link to="/privacy" className="text-muted-foreground hover:text-primary">
+						<Link to="/privacy" className="text-[13px] text-muted-foreground transition-colors hover:text-primary">
 							Privacy policy
 						</Link>
 					</div>
