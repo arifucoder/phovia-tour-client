@@ -47,7 +47,61 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 
+  /* Background & surface */
+  --color-phovia-bg: var(--phovia-bg);
+  --color-phovia-surface: var(--phovia-surface);
+  --color-phovia-surface2: var(--phovia-surface2);
+  --color-phovia-soft: var(--phovia-soft);
+  --color-phovia-line: var(--phovia-line);
+  --color-phovia-grid: var(--phovia-grid);
+
+  /* Text */
+  --color-phovia-ink: var(--phovia-ink);
+  --color-phovia-muted: var(--phovia-muted);
+
+  /* Brand */
   --color-phovia-primary: var(--phovia-primary);
+  --color-phovia-primary-hover: var(--phovia-primary-hover);
+  --color-phovia-primary-ink: var(--phovia-primary-ink);
+  --color-phovia-primary-soft: var(--phovia-primary-soft);
+
+  /* Accent */
+  --color-phovia-accent-soft: var(--phovia-accent-soft);
+  --color-phovia-accent-text: var(--phovia-accent-text);
+
+  /* Soft tiles */
+  --color-phovia-pink-soft: var(--phovia-pink-soft);
+  --color-phovia-yellow-soft: var(--phovia-yellow-soft);
+  --color-phovia-mint-soft: var(--phovia-mint-soft);
+
+  /* Star & placeholder */
+  --color-phovia-star: var(--phovia-star);
+  --color-phovia-ph: var(--phovia-ph);
+  --color-phovia-ph-ink: var(--phovia-ph-ink);
+
+  /* Status */
+  --color-phovia-ok: var(--phovia-ok);
+  --color-phovia-ok-soft: var(--phovia-ok-soft);
+  --color-phovia-warn: var(--phovia-warn);
+  --color-phovia-warn-soft: var(--phovia-warn-soft);
+  --color-phovia-danger: var(--phovia-danger);
+  --color-phovia-danger-ink: var(--phovia-danger-ink);
+  --color-phovia-danger-soft: var(--phovia-danger-soft);
+  --color-phovia-info: var(--phovia-info);
+  --color-phovia-info-soft: var(--phovia-info-soft);
+
+  /* Booking status */
+  --color-phovia-s-complete: var(--phovia-s-complete);
+  --color-phovia-s-pending: var(--phovia-s-pending);
+  --color-phovia-s-cancelled: var(--phovia-s-cancelled);
+  --color-phovia-s-failed: var(--phovia-s-failed);
+
+  /* Chart */
+  --color-phovia-c1: var(--phovia-c1);
+  --color-phovia-c2: var(--phovia-c2);
+
+  /* Shadow — `--shadow-` দিয়ে শুরু হলে Tailwind shadow class বানায় */
+  --shadow-phovia: var(--phovia-shadow);
 }
 
 :root {
@@ -84,7 +138,63 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
 
+  /* Background & surface */
+  --phovia-bg: #FFFFFF;
+  --phovia-surface: #FFFFFF;
+  --phovia-surface2: #F7F6FD;
+  --phovia-soft: #FFF3F5;
+  --phovia-line: #ECEAF5;
+  --phovia-grid: #EEECF6;
+
+  /* Text */
+  --phovia-ink: #1C1A3A;
+  --phovia-muted: #6A6785;
+
+  /* Brand */
   --phovia-primary: #5B4CF0;
+  --phovia-primary-hover: #4A3BD9;
+  --phovia-primary-ink: #FFFFFF;
+  --phovia-primary-soft: #EEEBFF;
+
+  /* Accent (pink) */
+  --phovia-accent-soft: #FFE8EC;
+  --phovia-accent-text: #B4335A;
+
+  /* Soft tile backgrounds (icon tile, badge) */
+  --phovia-pink-soft: #FFE8EC;
+  --phovia-yellow-soft: #FFF4DC;
+  --phovia-mint-soft: #E3F7EF;
+
+  /* Rating star */
+  --phovia-star: #FFB547;
+
+  /* Image placeholder */
+  --phovia-ph: #EEEBF8;
+  --phovia-ph-ink: #8A86AE;
+
+  /* Status: success / warning / danger / info */
+  --phovia-ok: #17714A;
+  --phovia-ok-soft: #E2F3EA;
+  --phovia-warn: #8F5400;
+  --phovia-warn-soft: #FFF0D4;
+  --phovia-danger: #B42318;
+  --phovia-danger-ink: #FFFFFF;
+  --phovia-danger-soft: #FDECEA;
+  --phovia-info: #21539E;
+  --phovia-info-soft: #E5EDFA;
+
+  /* Booking status (admin badge) */
+  --phovia-s-complete: #2E8B57;
+  --phovia-s-pending: #D9A21B;
+  --phovia-s-cancelled: #9AA3A0;
+  --phovia-s-failed: #C8402F;
+
+  /* Chart series */
+  --phovia-c1: #6152F0;
+  --phovia-c2: #D9771F;
+
+  /* Shadow */
+  --phovia-shadow: 0 12px 34px rgba(28, 26, 58, 0.08);
 }
 
 .dark {
@@ -121,7 +231,66 @@
   --sidebar-ring: oklch(0.556 0 0);
 
 
+  /* Background & surface */
+  --phovia-bg: #12111F;
+  --phovia-surface: #1B1A2E;
+  --phovia-surface2: #1F1D35;
+  --phovia-soft: #211B2E;
+  --phovia-line: #2E2B4A;
+  --phovia-grid: #2A2845;
+
+  /* Text */
+  --phovia-ink: #EEEDF7;
+  --phovia-muted: #A9A6C4;
+
+  /* Brand */
   --phovia-primary: #9D92FF;
+  --phovia-primary-hover: #B3AAFF;
+  --phovia-primary-ink: #14112E;
+  --phovia-primary-soft: #2A2550;
+
+  /* Accent (pink) */
+  --phovia-accent-soft: #3A2230;
+  --phovia-accent-text: #FF9DB2;
+
+  /* Soft tile backgrounds */
+  --phovia-pink-soft: #3A2230;
+  --phovia-yellow-soft: #3A3020;
+  --phovia-mint-soft: #1D3530;
+
+  /* Rating star — dark-এও একই */
+  --phovia-star: #FFB547;
+
+  /* Image placeholder */
+  --phovia-ph: #26243F;
+  --phovia-ph-ink: #7E7AA6;
+
+  /* Status */
+  --phovia-ok: #6DCB98;
+  --phovia-ok-soft: #14301F;
+  --phovia-warn: #F1C46E;
+  --phovia-warn-soft: #382B10;
+  --phovia-danger: #F28B80;
+  --phovia-danger-ink: #2A0E0B;
+  /* ডিজাইনে নেই — প্রস্তাবিত */
+  --phovia-danger-soft: #3B1916;
+  --phovia-info: #9DBBF0;
+  /* ডিজাইনে নেই — প্রস্তাবিত */
+  --phovia-info-soft: #172338;
+  /* ডিজাইনে নেই — প্রস্তাবিত */
+
+  /* Booking status */
+  --phovia-s-complete: #4FB67C;
+  --phovia-s-pending: #E2B23A;
+  --phovia-s-cancelled: #6E7A77;
+  --phovia-s-failed: #E0604E;
+
+  /* Chart series */
+  --phovia-c1: #7F73F5;
+  --phovia-c2: #D8762A;
+
+  /* Shadow */
+  --phovia-shadow: 0 12px 34px rgba(0, 0, 0, 0.35);
 }
 
 @layer base {
