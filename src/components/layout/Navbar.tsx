@@ -27,7 +27,7 @@ function Logo() {
 	);
 }
 
-export default function Header() {
+export default function Navbar() {
 	return (
 		<header className="w-full bg-background">
 			<div className="mx-auto flex h-21 max-w-300 items-center justify-between gap-6 px-4 sm:px-10">
