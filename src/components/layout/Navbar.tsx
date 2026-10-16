@@ -4,6 +4,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { cn } from "@/lib/utils";
 import { Menu } from "lucide-react";
 import { Link, NavLink } from "react-router";
+import { ModeToggle } from "./ModeToggler";
 
 const navLinks = [
 	{ label: "Home", href: "/" },
@@ -93,6 +94,7 @@ export default function Navbar() {
 							</div>
 						</SheetContent>
 					</Sheet>
+					<ModeToggle />
 				</div>
 			</div>
 		</header>
