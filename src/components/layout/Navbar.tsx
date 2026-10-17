@@ -52,7 +52,7 @@ export default function Navbar() {
 					>
 						Log in
 					</Link>
-					<Link to="/register" className={cn(primaryBtn, "hidden sm:inline-flex")}>
+					<Link to="/signup" className={cn(primaryBtn, "hidden sm:inline-flex")}>
 						Sign up
 					</Link>
 
