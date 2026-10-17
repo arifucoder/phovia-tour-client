@@ -1,12 +1,40 @@
 import GoogleIcon from "@/assets/icons/GoogleIcon";
 import Logo from "@/assets/icons/Logo";
 import { Button } from "@/components/ui/button";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Eye } from "lucide-react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Eye, EyeOff } from "lucide-react";
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import * as z from "zod";
+
+const formSchema = z.object({
+	email: z
+		.email({ error: "Invalid email address format." })
+		.min(5, { error: "Email must be at least 5 characters long." })
+		.max(100, { error: "Email cannot exceed 100 characters." }),
+	password: z.string().min(1, { error: "Password is required." }),
+});
+
+type FormValues = z.infer<typeof formSchema>;
 
 export default function LoginForm() {
+	const [showPassword, setShowPassword] = useState(false);
+
+	const form = useForm<FormValues>({
+		resolver: zodResolver(formSchema),
+		defaultValues: {
+			email: "",
+			password: "",
+		},
+	});
+
+	function onSubmit(data: FormValues) {
+		console.log(data);
+	}
+
 	return (
 		<div className="flex flex-col px-4 py-8 sm:px-6">
 			{/* Mobile-only logo (image panel hidden on small screens) */}
@@ -30,31 +58,55 @@ export default function LoginForm() {
 						<Separator className="flex-1" />
 					</div>
 
-					<form className="space-y-5">
-						<div className="space-y-2">
-							<Label htmlFor="email">Email</Label>
-							<Input id="email" type="email" placeholder="you@example.com" />
-						</div>
+					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5" noValidate>
+						<Controller
+							name="email"
+							control={form.control}
+							render={({ field, fieldState }) => (
+								<Field data-invalid={fieldState.invalid}>
+									<FieldLabel htmlFor="email">Email</FieldLabel>
+									<Input
+										{...field}
+										id="email"
+										type="email"
+										placeholder="you@example.com"
+										autoComplete="email"
+										aria-invalid={fieldState.invalid}
+									/>
+									{fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+								</Field>
+							)}
+						/>
 
-						<div className="space-y-2">
-							<div className="flex items-center justify-between">
-								<Label htmlFor="password">Password</Label>
-								<a href="/forgot-password" className="text-xs font-medium text-indigo-600 underline underline-offset-4">
-									Forgot password?
-								</a>
-							</div>
-							<div className="relative">
-								<Input id="password" type="password" className="pr-10" />
-								<button
-									type="button"
-									aria-label="Show password"
-									className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700"
-								>
-									<Eye className="h-4 w-4" />
-								</button>
-							</div>
-						</div>
-
+						<Controller
+							name="password"
+							control={form.control}
+							render={({ field, fieldState }) => (
+								<Field data-invalid={fieldState.invalid}>
+									<FieldLabel htmlFor="password">Password</FieldLabel>
+									{/* absolute button-এর জন্য relative wrapper লাগবে */}
+									<div className="relative">
+										<Input
+											{...field}
+											id="password"
+											type={showPassword ? "text" : "password"}
+											placeholder="Password"
+											className="pr-10"
+											aria-invalid={fieldState.invalid}
+										/>
+										<button
+											type="button"
+											onClick={() => setShowPassword((prev) => !prev)}
+											aria-label={showPassword ? "Hide password" : "Show password"}
+											className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700"
+										>
+											{showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+										</button>
+									</div>
+									{fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+								</Field>
+							)}
+						/>
 						<Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700">
 							Log in
 						</Button>
