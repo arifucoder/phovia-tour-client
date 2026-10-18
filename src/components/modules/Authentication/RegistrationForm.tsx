@@ -5,10 +5,12 @@ import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
+import { useRegisterMutation } from "@/redux/features/auth/auth.api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useNavigate } from "react-router";
 import * as z from "zod";
 
 const bdPhoneRegex = /^(?:\+88)?01[3-9]\d{8}$/;
@@ -52,6 +54,9 @@ export default function RegistrationForm() {
 	const [showPassword, setShowPassword] = useState(false);
 	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+	const [register] = useRegisterMutation();
+	const navigate = useNavigate();
+
 	const form = useForm<FormValues>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -64,9 +69,24 @@ export default function RegistrationForm() {
 		},
 	});
 
-	function onSubmit(data: FormValues) {
-		console.log(data);
-	}
+	const onSubmit = async (data: FormValues) => {
+		const userInfo = {
+			name: data.name,
+			email: data.email,
+			password: data.password,
+			phone: data.phone,
+			address: data.address,
+		};
+
+		try {
+			const result = await register(userInfo).unwrap();
+			console.log(result);
+			toast.success("User created successfully");
+			navigate("/verify");
+		} catch (error) {
+			console.error(error);
+		}
+	};
 
 	return (
 		<div className="flex flex-col px-4 py-8 sm:px-6">
