@@ -4,11 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { useLoginMutation } from "@/redux/features/auth/auth.api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useNavigate } from "react-router";
+import { toast } from "sonner";
 import * as z from "zod";
+import type { TApiError } from "./RegistrationForm";
 
 const formSchema = z.object({
 	email: z
@@ -23,6 +27,9 @@ type FormValues = z.infer<typeof formSchema>;
 export default function LoginForm() {
 	const [showPassword, setShowPassword] = useState(false);
 
+	const [login] = useLoginMutation();
+	const navigate = useNavigate();
+
 	const form = useForm<FormValues>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -31,9 +38,32 @@ export default function LoginForm() {
 		},
 	});
 
-	function onSubmit(data: FormValues) {
-		console.log(data);
-	}
+	const onSubmit = async (data: FormValues) => {
+		const userInfo = {
+			email: data.email,
+			password: data.password,
+		};
+
+		try {
+			const result = await login(userInfo).unwrap();
+			console.log(result);
+			navigate("/");
+		} catch (err) {
+			const error = err as TApiError;
+			console.error(error);
+
+			// backend-এ unverified-এর জন্য যে status/message আসে, সেটা দিয়ে চেক করুন
+			if (error.status === 401 && error.data?.message?.toLowerCase().includes("verif")) {
+				toast.error("Your account is not verified");
+				navigate("/verify", { state: data.email });
+				return;
+			}
+
+			const message =
+				error.data?.errorSources?.[0]?.message || error.data?.message || "Login failed. Please try again.";
+			toast.error(message);
+		}
+	};
 
 	return (
 		<div className="flex flex-col px-4 py-8 sm:px-6">
