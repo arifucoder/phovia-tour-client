@@ -11,9 +11,18 @@ import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
+import { toast } from "sonner";
 import * as z from "zod";
 
 const bdPhoneRegex = /^(?:\+88)?01[3-9]\d{8}$/;
+
+export type TApiError = {
+	status?: number;
+	data?: {
+		message?: string;
+		errorSources?: { path: string; message: string }[];
+	};
+};
 
 const formSchema = z
 	.object({
@@ -40,8 +49,9 @@ const formSchema = z
 			.trim()
 			.refine((value) => value === "" || bdPhoneRegex.test(value), {
 				error: "Enter a valid Bangladeshi number: 01XXXXXXXXX or +8801XXXXXXXXX",
-			}),
-		address: z.string().trim().max(200, { error: "Address cannot exceed 200 characters." }),
+			})
+			.optional(),
+		address: z.string().trim().max(200, { error: "Address cannot exceed 200 characters." }).optional(),
 	})
 	.refine((data) => data.password === data.confirmPassword, {
 		error: "Passwords do not match.",
@@ -74,8 +84,8 @@ export default function RegistrationForm() {
 			name: data.name,
 			email: data.email,
 			password: data.password,
-			phone: data.phone,
-			address: data.address,
+			...(data.phone ? { phone: data.phone } : {}),
+			...(data.address ? { address: data.address } : {}),
 		};
 
 		try {
@@ -83,8 +93,12 @@ export default function RegistrationForm() {
 			console.log(result);
 			toast.success("User created successfully");
 			navigate("/verify");
-		} catch (error) {
+		} catch (err) {
+			let error = err as TApiError;
 			console.error(error);
+			const message =
+				error?.data?.errorSources?.[0]?.message || error?.data?.message || "Registration failed. Please try again.";
+			toast.error(message);
 		}
 	};
 
