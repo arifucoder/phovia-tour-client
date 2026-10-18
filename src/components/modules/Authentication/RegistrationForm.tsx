@@ -11,10 +11,13 @@ import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as z from "zod";
 
+const bdPhoneRegex = /^(?:\+88)?01[3-9]\d{8}$/;
+
 const formSchema = z
 	.object({
 		name: z
 			.string({ error: "Name must be string" })
+			.trim()
 			.min(2, { error: "Name must be at least 2 characters long." })
 			.max(50, { error: "Name cannot exceed 50 characters." }),
 		email: z
@@ -32,11 +35,11 @@ const formSchema = z
 		// Optional field খালি থাকলে "" আসে, তাই "" কেও valid ধরা হচ্ছে
 		phone: z
 			.string()
-			.regex(/^(?:\+8801\d{9}|01\d{9})$/, {
-				error: "Phone number must be valid for Bangladesh. Format: +8801XXXXXXXXX or 01XXXXXXXXX",
-			})
-			.or(z.literal("")),
-		address: z.string().max(200, { error: "Address cannot exceed 200 characters." }),
+			.trim()
+			.refine((value) => value === "" || bdPhoneRegex.test(value), {
+				error: "Enter a valid Bangladeshi number: 01XXXXXXXXX or +8801XXXXXXXXX",
+			}),
+		address: z.string().trim().max(200, { error: "Address cannot exceed 200 characters." }),
 	})
 	.refine((data) => data.password === data.confirmPassword, {
 		error: "Passwords do not match.",
@@ -51,7 +54,6 @@ export default function RegistrationForm() {
 
 	const form = useForm<FormValues>({
 		resolver: zodResolver(formSchema),
-		// প্রতিটি field-এর default value দিতে হবে
 		defaultValues: {
 			name: "",
 			email: "",
