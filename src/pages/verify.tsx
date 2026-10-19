@@ -12,7 +12,7 @@ import { useLocation, useNavigate } from "react-router";
 import { toast } from "sonner";
 import z from "zod";
 
-const RESEND_TIME = 60; // সেকেন্ড
+const RESEND_TIME = 120; // সেকেন্ড
 
 const FormSchema = z.object({
 	pin: z.string().length(6, { error: "Your one-time password must be 6 characters." }),
