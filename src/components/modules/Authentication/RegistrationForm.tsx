@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { useRegisterMutation } from "@/redux/features/auth/auth.api";
+import type { TApiError } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
@@ -15,14 +16,6 @@ import { toast } from "sonner";
 import * as z from "zod";
 
 const bdPhoneRegex = /^(?:\+88)?01[3-9]\d{8}$/;
-
-export type TApiError = {
-	status?: number;
-	data?: {
-		message?: string;
-		errorSources?: { path: string; message: string }[];
-	};
-};
 
 const formSchema = z
 	.object({

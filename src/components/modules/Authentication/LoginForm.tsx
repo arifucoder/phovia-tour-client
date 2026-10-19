@@ -5,6 +5,7 @@ import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useLoginMutation } from "@/redux/features/auth/auth.api";
+import type { TApiError } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
@@ -12,7 +13,6 @@ import { Controller, useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 import * as z from "zod";
-import type { TApiError } from "./RegistrationForm";
 
 const formSchema = z.object({
 	email: z
