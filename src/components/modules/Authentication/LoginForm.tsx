@@ -74,8 +74,8 @@ export default function LoginForm() {
 
 			<div className="flex flex-1 items-center justify-center">
 				<div className="w-full max-w-sm">
-					<h1 className="text-3xl font-bold text-slate-900">Welcome back</h1>
-					<p className="mt-2 text-sm text-slate-600">Log in to manage your bookings.</p>
+					<h1 className="text-3xl font-bold text-foreground">Welcome back</h1>
+					<p className="mt-2 text-sm text-foreground">Log in to manage your bookings.</p>
 
 					<Button variant="outline" className="mt-6 w-full gap-2" type="button">
 						<GoogleIcon />
@@ -84,7 +84,7 @@ export default function LoginForm() {
 
 					<div className="my-5 flex items-center gap-3">
 						<Separator className="flex-1" />
-						<span className="text-xs text-slate-500">or log in with email</span>
+						<span className="text-xs text-foreground">or log in with email</span>
 						<Separator className="flex-1" />
 					</div>
 
@@ -142,7 +142,7 @@ export default function LoginForm() {
 						</Button>
 					</form>
 
-					<p className="mt-6 text-center text-sm text-slate-600">
+					<p className="mt-6 text-center text-sm text-foreground">
 						New to Phovia Tour?{" "}
 						<a href="/signup" className="font-medium text-indigo-600 underline underline-offset-4">
 							Create an account

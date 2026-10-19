@@ -10,7 +10,7 @@ import heroImage from "../assets/images/auth/inani-beach.jpeg";
 
 export default function LoginPage() {
 	return (
-		<div className="grid min-h-screen bg-white lg:grid-cols-2">
+		<div className="grid min-h-screen bg-background lg:grid-cols-2">
 			{/* Left: image panel */}
 			<div className="relative hidden p-4 lg:block">
 				<div className="relative h-full overflow-hidden rounded-3xl bg-linear-to-b from-slate-200 via-slate-400 to-slate-700">
@@ -32,7 +32,7 @@ export default function LoginPage() {
 							<br />
 							taps away.
 						</h2>
-						<p className="mt-3 max-w-sm text-sm text-white/80">
+						<p className="mt-3 max-w-sm text-sm text-foreground">
 							Log in to book tours, pay securely and keep every invoice in one place.
 						</p>
 					</div>

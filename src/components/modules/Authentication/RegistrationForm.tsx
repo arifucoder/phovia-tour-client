@@ -92,7 +92,7 @@ export default function RegistrationForm() {
 			const result = await register(userInfo).unwrap();
 			console.log(result);
 			toast.success("User created successfully");
-			navigate("/verify");
+			navigate("/verify", { state: data.email });
 		} catch (err) {
 			let error = err as TApiError;
 			console.error(error);
