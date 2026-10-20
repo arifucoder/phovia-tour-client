@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import config from "@/config";
 import { useLoginMutation } from "@/redux/features/auth/auth.api";
 import type { TApiError } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -77,7 +78,12 @@ export default function LoginForm() {
 					<h1 className="text-3xl font-bold text-foreground">Welcome back</h1>
 					<p className="mt-2 text-sm text-foreground">Log in to manage your bookings.</p>
 
-					<Button variant="outline" className="mt-6 w-full gap-2" type="button">
+					<Button
+						onClick={() => window.open(`${config.baseUrl}/auth/google`)}
+						variant="outline"
+						className="mt-6 w-full gap-2"
+						type="button"
+					>
 						<GoogleIcon />
 						Continue with Google
 					</Button>
