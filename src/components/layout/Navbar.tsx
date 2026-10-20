@@ -1,9 +1,9 @@
 import Logo from "@/assets/icons/Logo";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { useUserInfoQuery } from "@/redux/features/auth/auth.api";
-import { Menu } from "lucide-react";
+import { LogOut, Menu } from "lucide-react";
 import { Link, NavLink } from "react-router";
 import { ModeToggle } from "./ModeToggler";
 
@@ -28,7 +28,10 @@ const outlineBtn = cn(
 
 export default function Navbar() {
 	const { data } = useUserInfoQuery(undefined);
-	console.log(data?.data);
+
+	const handleLogout = () => {
+		console.log("clicked");
+	};
 	return (
 		<header className="w-full bg-background">
 			<div className="mx-auto flex h-21 max-w-300 items-center justify-between gap-6 px-4 sm:px-10">
@@ -49,15 +52,24 @@ export default function Navbar() {
 
 				{/* Right side */}
 				<div className="flex items-center gap-3.5">
-					<Link
-						to="/login"
-						className="hidden py-1.5 text-[14.5px] font-medium text-foreground transition-colors hover:text-primary sm:inline-block"
-					>
-						Log in
-					</Link>
-					<Link to="/signup" className={cn(primaryBtn, "hidden sm:inline-flex")}>
-						Sign up
-					</Link>
+					{data?.data?.email ? (
+						<Button onClick={handleLogout} className={cn(outlineBtn, "hidden sm:inline-flex")}>
+							<LogOut className="size-4" />
+							Log out
+						</Button>
+					) : (
+						<>
+							<Link
+								to="/login"
+								className="hidden py-1.5 text-[14.5px] font-medium text-foreground transition-colors hover:text-primary sm:inline-block"
+							>
+								Log in
+							</Link>
+							<Link to="/signup" className={cn(primaryBtn, "hidden sm:inline-flex")}>
+								Sign up
+							</Link>
+						</>
+					)}
 
 					{/* Mobile menu */}
 					<Sheet>
@@ -88,12 +100,21 @@ export default function Navbar() {
 								))}
 							</nav>
 							<div className="mt-4 flex flex-col gap-3 px-4 sm:hidden">
-								<Link to="/login" className={outlineBtn}>
-									Log in
-								</Link>
-								<Link to="/register" className={primaryBtn}>
-									Sign up
-								</Link>
+								{data?.data?.email ? (
+									<button onClick={handleLogout} className={outlineBtn}>
+										<LogOut className="size-4" />
+										Log out
+									</button>
+								) : (
+									<>
+										<Link to="/login" className={outlineBtn}>
+											Log in
+										</Link>
+										<Link to="/register" className={primaryBtn}>
+											Sign up
+										</Link>
+									</>
+								)}
 							</div>
 						</SheetContent>
 					</Sheet>
