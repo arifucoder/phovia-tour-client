@@ -46,9 +46,11 @@ export default function LoginForm() {
 		};
 
 		try {
-			const result = await login(userInfo).unwrap();
-			console.log(result);
-			navigate("/");
+			const res = await login(userInfo).unwrap();
+			if (res.success) {
+				toast.message("Logged in successfully");
+				navigate("/");
+			}
 		} catch (err) {
 			const error = err as TApiError;
 			console.error(error);

@@ -2,7 +2,8 @@ import Logo from "@/assets/icons/Logo";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import { useUserInfoQuery } from "@/redux/features/auth/auth.api";
+import { authApi, useLogoutMutation, useUserInfoQuery } from "@/redux/features/auth/auth.api";
+import { useAppDispatch } from "@/redux/hook";
 import { LogOut, Menu } from "lucide-react";
 import { Link, NavLink } from "react-router";
 import { ModeToggle } from "./ModeToggler";
@@ -28,9 +29,15 @@ const outlineBtn = cn(
 
 export default function Navbar() {
 	const { data } = useUserInfoQuery(undefined);
+	const [logout] = useLogoutMutation();
+	const dispatch = useAppDispatch();
 
-	const handleLogout = () => {
-		console.log("clicked");
+	const handleLogout = async () => {
+		try {
+			await logout(undefined).unwrap();
+		} finally {
+			dispatch(authApi.util.resetApiState());
+		}
 	};
 	return (
 		<header className="w-full bg-background">
