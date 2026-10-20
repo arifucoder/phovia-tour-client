@@ -1,6 +1,8 @@
 import App from "@/App";
+import DashboardLayout from "@/components/layout/DashboardLayout";
 
 import About from "@/pages/About";
+import Analytics from "@/pages/Admin/Analytics";
 import LoginPage from "@/pages/Login";
 import RegisterPage from "@/pages/Register";
 import Verify from "@/pages/verify";
@@ -14,6 +16,26 @@ export const router = createBrowserRouter([
 			{
 				Component: About,
 				path: "about",
+			},
+		],
+	},
+	{
+		Component: DashboardLayout,
+		path: "/admin",
+		children: [
+			{
+				Component: Analytics,
+				path: "analytics",
+			},
+		],
+	},
+	{
+		Component: DashboardLayout,
+		path: "/user",
+		children: [
+			{
+				Component: Analytics,
+				path: "bookings",
 			},
 		],
 	},
