@@ -2,6 +2,7 @@ import Logo from "@/assets/icons/Logo";
 import { buttonVariants } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
+import { useUserInfoQuery } from "@/redux/features/auth/auth.api";
 import { Menu } from "lucide-react";
 import { Link, NavLink } from "react-router";
 import { ModeToggle } from "./ModeToggler";
@@ -26,6 +27,8 @@ const outlineBtn = cn(
 );
 
 export default function Navbar() {
+	const { data } = useUserInfoQuery(undefined);
+	console.log(data?.data);
 	return (
 		<header className="w-full bg-background">
 			<div className="mx-auto flex h-21 max-w-300 items-center justify-between gap-6 px-4 sm:px-10">
