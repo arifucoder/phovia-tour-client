@@ -5,6 +5,7 @@ import About from "@/pages/About";
 import Analytics from "@/pages/Admin/Analytics";
 import LoginPage from "@/pages/Login";
 import RegisterPage from "@/pages/Register";
+import Booking from "@/pages/User/Booking";
 import Verify from "@/pages/verify";
 import { createBrowserRouter } from "react-router";
 
@@ -34,7 +35,7 @@ export const router = createBrowserRouter([
 		path: "/user",
 		children: [
 			{
-				Component: Analytics,
+				Component: Booking,
 				path: "bookings",
 			},
 		],
