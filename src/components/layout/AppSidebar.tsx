@@ -11,32 +11,13 @@ import {
 	SidebarMenuItem,
 	SidebarRail,
 } from "@/components/ui/sidebar";
+import { adminSidebarItems } from "@/routes/adminSidebarItems";
 import * as React from "react";
 import { Link, useLocation } from "react-router";
 
 // sidebar-01-এর মতো: section অনুযায়ী ভাগ করা navigation
 const data = {
-	navMain: [
-		{
-			title: "Dashboard",
-			items: [{ title: "Overview", url: "/admin" }],
-		},
-		{
-			title: "Catalogue",
-			items: [
-				{ title: "Tours", url: "/admin/tours" },
-				{ title: "Tour types", url: "/admin/tour-types" },
-				{ title: "Divisions", url: "/admin/divisions" },
-			],
-		},
-		{
-			title: "Operations",
-			items: [
-				{ title: "Bookings", url: "/admin/bookings" },
-				{ title: "Users", url: "/admin/users" },
-			],
-		},
-	],
+	navMain: adminSidebarItems,
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
