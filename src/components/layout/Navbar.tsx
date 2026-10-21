@@ -1,6 +1,7 @@
 import Logo from "@/assets/icons/Logo";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { role } from "@/constants/role";
 import { cn } from "@/lib/utils";
 import { authApi, useLogoutMutation, useUserInfoQuery } from "@/redux/features/auth/auth.api";
 import { useAppDispatch } from "@/redux/hook";
@@ -9,12 +10,11 @@ import { Link, NavLink } from "react-router";
 import { ModeToggle } from "./ModeToggler";
 
 const navLinks = [
-	{ label: "Home", href: "/" },
-	{ label: "About", href: "/about" },
-	{ label: "Tours", href: "/tours" },
-	{ label: "Divisions", href: "/divisions" },
-	{ label: "Short tours", href: "/tours?type=short" },
-	{ label: "Long tours", href: "/tours?type=long" },
+	{ href: "/", label: "Home", role: "PUBLIC" },
+	{ href: "/about", label: "About", role: "PUBLIC" },
+	{ href: "/admin", label: "Dashboard", role: role.admin },
+	{ href: "/admin", label: "Dashboard", role: role.superAdmin },
+	{ href: "/user", label: "Dashboard", role: role.user },
 ];
 
 const primaryBtn = cn(
@@ -47,13 +47,27 @@ export default function Navbar() {
 				{/* Desktop nav */}
 				<nav aria-label="Main" className="hidden items-center gap-9 lg:flex">
 					{navLinks.map((link) => (
-						<NavLink
-							key={link.label}
-							to={link.href}
-							className="relative py-1.5 text-[14.5px] font-medium text-foreground transition-colors hover:text-primary after:absolute after:-bottom-1 after:left-1/2 after:size-1.25 after:-translate-x-1/2 after:rounded-full after:bg-primary after:opacity-0 aria-[current=page]:after:opacity-100"
-						>
-							{link.label}
-						</NavLink>
+						<>
+							{link.role === "PUBLIC" && (
+								<NavLink
+									key={link.label}
+									to={link.href}
+									className="relative py-1.5 text-[14.5px] font-medium text-foreground transition-colors hover:text-primary after:absolute after:-bottom-1 after:left-1/2 after:size-1.25 after:-translate-x-1/2 after:rounded-full after:bg-primary after:opacity-0 aria-[current=page]:after:opacity-100"
+								>
+									{link.label}
+								</NavLink>
+							)}
+
+							{link.role === data?.data?.role && (
+								<NavLink
+									key={link.label}
+									to={link.href}
+									className="relative py-1.5 text-[14.5px] font-medium text-foreground transition-colors hover:text-primary after:absolute after:-bottom-1 after:left-1/2 after:size-1.25 after:-translate-x-1/2 after:rounded-full after:bg-primary after:opacity-0 aria-[current=page]:after:opacity-100"
+								>
+									{link.label}
+								</NavLink>
+							)}
+						</>
 					))}
 				</nav>
 
@@ -97,13 +111,26 @@ export default function Navbar() {
 							</SheetHeader>
 							<nav aria-label="Mobile" className="flex flex-col gap-1 px-4">
 								{navLinks.map((link) => (
-									<NavLink
-										key={link.label}
-										to={link.href}
-										className="rounded-lg px-3 py-2.5 text-[15px] font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground aria-[current=page]:bg-accent aria-[current=page]:text-accent-foreground"
-									>
-										{link.label}
-									</NavLink>
+									<>
+										{link.role === "PUBLIC" && (
+											<NavLink
+												key={link.label}
+												to={link.href}
+												className="rounded-lg px-3 py-2.5 text-[15px] font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground aria-[current=page]:bg-accent aria-[current=page]:text-accent-foreground"
+											>
+												{link.label}
+											</NavLink>
+										)}
+										{link.role === data?.data?.role && (
+											<NavLink
+												key={link.label}
+												to={link.href}
+												className="rounded-lg px-3 py-2.5 text-[15px] font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground aria-[current=page]:bg-accent aria-[current=page]:text-accent-foreground"
+											>
+												{link.label}
+											</NavLink>
+										)}
+									</>
 								))}
 							</nav>
 							<div className="mt-4 flex flex-col gap-3 px-4 sm:hidden">
