@@ -159,6 +159,15 @@
   --sidebar-ring: #5B4CF0;
 
   --shadow-card: 0 12px 34px rgba(28, 26, 58, 0.08);
+
+  --sidebar: #1C1A3A;
+  --sidebar-foreground: #C9C6E4;
+  --sidebar-primary: #8F84FF;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: rgb(255 255 255 / 0.1);
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: #2E2B4A;
+  --sidebar-ring: #9D92FF;
 }
 
 .dark {
@@ -234,6 +243,16 @@
   --sidebar-ring: #9D92FF;
 
   --shadow-card: 0 12px 34px rgba(0, 0, 0, 0.35);
+
+
+  --sidebar: #1C1A3A;
+  --sidebar-foreground: #C9C6E4;
+  --sidebar-primary: #8F84FF;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: rgb(255 255 255 / 0.1);
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: #2E2B4A;
+  --sidebar-ring: #9D92FF;
 }
 
 @layer base {
