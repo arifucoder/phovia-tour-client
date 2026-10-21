@@ -1,7 +1,7 @@
+import AddTourTypeForm from "@/components/modules/Admin/TourType/AddTourTypeForm";
 import { Button } from "@/components/ui/button";
 import { useGetTourTypesQuery } from "@/redux/features/Tour/tour.api";
 import { Pencil, Tag, Trash2 } from "lucide-react";
-import AddTourTypeForm from "./AddTourTypeForm";
 
 export default function AddTourTypes() {
 	const { data } = useGetTourTypesQuery(undefined);
@@ -29,7 +29,7 @@ export default function AddTourTypes() {
 					<ul className="list-none">
 						{/* Normal row (in use → delete disabled) */}
 						{data?.map((item) => (
-							<li className="flex items-center gap-3.5 border-t border-border px-4.5 py-3.5">
+							<li key={item._id} className="flex items-center gap-3.5 border-t border-border px-4.5 py-3.5">
 								<span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-accent text-accent-foreground">
 									<Tag className="size-4.5" />
 								</span>
