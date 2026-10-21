@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { authApi, useLogoutMutation, useUserInfoQuery } from "@/redux/features/auth/auth.api";
 import { useAppDispatch } from "@/redux/hook";
 import { LogOut, Menu } from "lucide-react";
+import { Fragment } from "react";
 import { Link, NavLink } from "react-router";
 import { ModeToggle } from "./ModeToggler";
 
@@ -46,8 +47,8 @@ export default function Navbar() {
 
 				{/* Desktop nav */}
 				<nav aria-label="Main" className="hidden items-center gap-9 lg:flex">
-					{navLinks.map((link) => (
-						<>
+					{navLinks.map((link, index) => (
+						<Fragment key={index}>
 							{link.role === "PUBLIC" && (
 								<NavLink
 									key={link.label}
@@ -67,7 +68,7 @@ export default function Navbar() {
 									{link.label}
 								</NavLink>
 							)}
-						</>
+						</Fragment>
 					))}
 				</nav>
 
@@ -110,8 +111,8 @@ export default function Navbar() {
 								</SheetTitle>
 							</SheetHeader>
 							<nav aria-label="Mobile" className="flex flex-col gap-1 px-4">
-								{navLinks.map((link) => (
-									<>
+								{navLinks.map((link, index) => (
+									<Fragment key={index}>
 										{link.role === "PUBLIC" && (
 											<NavLink
 												key={link.label}
@@ -130,7 +131,7 @@ export default function Navbar() {
 												{link.label}
 											</NavLink>
 										)}
-									</>
+									</Fragment>
 								))}
 							</nav>
 							<div className="mt-4 flex flex-col gap-3 px-4 sm:hidden">
