@@ -11,22 +11,24 @@ import {
 	SidebarMenuItem,
 	SidebarRail,
 } from "@/components/ui/sidebar";
-import { adminSidebarItems } from "@/routes/adminSidebarItems";
+import { useUserInfoQuery } from "@/redux/features/auth/auth.api";
+import { getSidebarItems } from "@/utils/getSidebarItems";
 import * as React from "react";
 import { Link, useLocation } from "react-router";
 
 // sidebar-01-এর মতো: section অনুযায়ী ভাগ করা navigation
-const data = {
-	navMain: adminSidebarItems,
-};
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 	const { pathname } = useLocation();
+	const { data: userData } = useUserInfoQuery(undefined);
+	const data = {
+		navMain: getSidebarItems(userData?.data?.role),
+	};
 
 	return (
 		<Sidebar {...props}>
 			<SidebarHeader>
-				<Link to="/admin" className="flex items-center gap-2.5 p-2">
+				<Link to="/" className="flex items-center gap-2.5 p-2">
 					<svg width="25" height="29" viewBox="0 0 26 30" aria-hidden="true">
 						<path
 							d="M13 0C5.8 0 0 5.6 0 12.6 0 21.7 13 30 13 30s13-8.3 13-17.4C26 5.6 20.2 0 13 0z"
@@ -36,7 +38,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 					</svg>
 					<span className="leading-tight">
 						<span className="block text-lg font-bold text-white">Phovia Tour</span>
-						<span className="text-xs text-sidebar-foreground/70">Admin console</span>
+						<span className="text-xs text-sidebar-foreground/70">Dashboard console</span>
 					</span>
 				</Link>
 			</SidebarHeader>

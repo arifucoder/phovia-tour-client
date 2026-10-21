@@ -4,11 +4,11 @@ import DashboardLayout from "@/components/layout/DashboardLayout";
 import About from "@/pages/About";
 import LoginPage from "@/pages/Login";
 import RegisterPage from "@/pages/Register";
-import Booking from "@/pages/User/Booking";
 import Verify from "@/pages/verify";
 import { generateRoutes } from "@/utils/generateRoutes";
 import { createBrowserRouter } from "react-router";
 import { adminSidebarItems } from "./adminSidebarItems";
+import { userSidebarItems } from "./userSidebarItems";
 
 export const router = createBrowserRouter([
 	{
@@ -29,12 +29,7 @@ export const router = createBrowserRouter([
 	{
 		Component: DashboardLayout,
 		path: "/user",
-		children: [
-			{
-				Component: Booking,
-				path: "bookings",
-			},
-		],
+		children: [...generateRoutes(userSidebarItems)],
 	},
 	{
 		Component: LoginPage,
