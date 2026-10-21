@@ -7,7 +7,7 @@ import { lazy } from "react";
 
 const Analytics = lazy(() => import("@/pages/Admin/Analytics"));
 const Overview = lazy(() => import("@/pages/Admin/Overview"));
-const AddTourTypes = lazy(() => import("@/pages/Admin/AddTourTypes"));
+const AddTourType = lazy(() => import("@/pages/Admin/AddTourType"));
 const AddTour = lazy(() => import("@/pages/Admin/AddTour"));
 
 export const adminSidebarItems: ISidebarItem[] = [
@@ -22,7 +22,7 @@ export const adminSidebarItems: ISidebarItem[] = [
 		title: "Tour Management",
 		items: [
 			{ title: "Tours", url: "/admin/tours", component: AddTour },
-			{ title: "Tour types", url: "/admin/tour-types", component: AddTourTypes },
+			{ title: "Tour type", url: "/admin/tour-types", component: AddTourType },
 		],
 	},
 ];
