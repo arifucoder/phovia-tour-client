@@ -4,6 +4,7 @@ import DashboardLayout from "@/components/layout/DashboardLayout";
 import About from "@/pages/About";
 import LoginPage from "@/pages/Login";
 import RegisterPage from "@/pages/Register";
+import Unauthorized from "@/pages/Unauthorized";
 import Verify from "@/pages/verify";
 import { generateRoutes } from "@/utils/generateRoutes";
 import { createBrowserRouter, Navigate } from "react-router";
@@ -42,5 +43,9 @@ export const router = createBrowserRouter([
 	{
 		Component: Verify,
 		path: "/verify",
+	},
+	{
+		Component: Unauthorized,
+		path: "/unauthorized",
 	},
 ]);
