@@ -1,21 +1,18 @@
-export const adminSidebarItems = [
+import AddTour from "@/pages/Admin/AddTour";
+import AddTourTypes from "@/pages/Admin/AddTourTypes";
+import Overview from "@/pages/Admin/Overview";
+import type { ISidebarItem } from "@/types";
+
+export const adminSidebarItems: ISidebarItem[] = [
 	{
 		title: "Dashboard",
-		items: [{ title: "Overview", url: "/admin" }],
+		items: [{ title: "Overview", url: "/admin", component: Overview }],
 	},
 	{
-		title: "Catalogue",
+		title: "Tour Management",
 		items: [
-			{ title: "Tours", url: "/admin/tours" },
-			{ title: "Tour types", url: "/admin/tour-types" },
-			{ title: "Divisions", url: "/admin/divisions" },
-		],
-	},
-	{
-		title: "Operations",
-		items: [
-			{ title: "Bookings", url: "/admin/bookings" },
-			{ title: "Users", url: "/admin/users" },
+			{ title: "Tours", url: "/admin/tours", component: AddTour },
+			{ title: "Tour types", url: "/admin/tour-types", component: AddTourTypes },
 		],
 	},
 ];
