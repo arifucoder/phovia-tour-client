@@ -50,7 +50,6 @@ export default function AddTourTypes() {
 									variant="outline"
 									size="icon"
 									type="button"
-									disabled
 									title="In use by 46 tours — move them first"
 									aria-label="Delete Short tour — in use by 46 tours"
 									className="size-10 rounded-lg disabled:opacity-40"
