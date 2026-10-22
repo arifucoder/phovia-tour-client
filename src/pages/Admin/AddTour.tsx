@@ -1,227 +1,311 @@
-import { DeleteConfirmation } from "@/components/DeleteConfirmation";
-import AddTourModal from "@/components/modules/Admin/Tour/AddTourModal";
 import { Button } from "@/components/ui/button";
-import { CalendarDays, ImageIcon, MapPin, Pencil, Trash2, Users } from "lucide-react";
+import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import SearchableSelect from "@/components/ui/searchable-select";
+import { Textarea } from "@/components/ui/textarea";
+import { ArrowLeft, ImagePlus, Plus, X } from "lucide-react";
+import type { ReactNode } from "react";
+import { Link } from "react-router";
 
-// Static demo data — later replace with API data
-const tours = [
-	{
-		_id: "1",
-		title: "Sajek Valley 3-Day Escape",
-		slug: "sajek-valley-3-day-escape",
-		images: [] as string[],
-		location: "Sajek, Rangamati",
-		division: { name: "Chattogram" },
-		tourType: { name: "Long tour" },
-		startDate: "2026-11-12",
-		endDate: "2026-11-14",
-		costFrom: 7500,
-		maxGuest: 20,
-	},
-	{
-		_id: "2",
-		title: "Sreemangal Tea Garden Day Trip",
-		slug: "sreemangal-tea-garden-day-trip",
-		images: [] as string[],
-		location: "Sreemangal, Moulvibazar",
-		division: { name: "Sylhet" },
-		tourType: { name: "Short tour" },
-		startDate: "2026-11-20",
-		endDate: "2026-11-20",
-		costFrom: 3200,
-		maxGuest: 30,
-	},
-	{
-		_id: "3",
-		title: "Sundarbans Mangrove Cruise",
-		slug: "sundarbans-mangrove-cruise",
-		images: [] as string[],
-		location: "Mongla, Bagerhat",
-		division: { name: "Khulna" },
-		tourType: { name: "Long tour" },
-		startDate: "2026-12-05",
-		endDate: "2026-12-07",
-		costFrom: 12500,
-		maxGuest: 16,
-	},
-	{
-		_id: "4",
-		title: "Old Dhaka Food Walk",
-		slug: "old-dhaka-food-walk",
-		images: [] as string[],
-		location: "Puran Dhaka",
-		division: { name: "Dhaka" },
-		tourType: { name: "Short tour" },
-		startDate: "2026-11-08",
-		endDate: "2026-11-08",
-		costFrom: 1500,
-		maxGuest: 12,
-	},
-	{
-		_id: "5",
-		title: "Cox's Bazar Weekend Getaway",
-		slug: "coxs-bazar-weekend-getaway",
-		images: [] as string[],
-		location: "Inani Beach, Cox's Bazar",
-		division: { name: "Chattogram" },
-		tourType: { name: "Weekend getaway" },
-		startDate: "2026-11-27",
-		endDate: "2026-11-29",
-		costFrom: 9800,
-		maxGuest: 25,
-	},
+// Static options — later replace with API data
+const divisionOptions = [
+	{ value: "chattogram", label: "Chattogram" },
+	{ value: "sylhet", label: "Sylhet" },
+	{ value: "dhaka", label: "Dhaka" },
+	{ value: "khulna", label: "Khulna" },
+	{ value: "rajshahi", label: "Rajshahi" },
+	{ value: "barishal", label: "Barishal" },
+	{ value: "mymensingh", label: "Mymensingh" },
+	{ value: "rangpur", label: "Rangpur" },
 ];
 
-const formatDate = (date: string) =>
-	new Date(date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+const tourTypeOptions = [
+	{ value: "short", label: "Short tour" },
+	{ value: "long", label: "Long tour (3+ days)" },
+	{ value: "weekend", label: "Weekend getaway" },
+];
 
-const formatPrice = (amount: number) => `৳${amount.toLocaleString("en-IN")}`;
+const inputCls = "h-11 rounded-lg px-3.5 text-[15px]";
+
+/* ───────── small static helpers ───────── */
+
+function Section({ title, description, children }: { title: string; description?: string; children: ReactNode }) {
+	return (
+		<section className="rounded-xl border border-border bg-card shadow-card">
+			<div className="border-b border-border px-5.5 py-4">
+				<h2 className="text-base font-bold text-foreground">{title}</h2>
+				{description && <p className="text-[13px] text-muted-foreground">{description}</p>}
+			</div>
+			<div className="flex flex-col gap-4 p-5.5">{children}</div>
+		</section>
+	);
+}
+
+function ListField({
+	id,
+	label,
+	placeholder,
+	items,
+	numbered = false,
+}: {
+	id: string;
+	label: string;
+	placeholder: string;
+	items: string[];
+	numbered?: boolean;
+}) {
+	return (
+		<Field className="gap-1.5">
+			<FieldLabel htmlFor={id} className="text-sm font-semibold">
+				{label}
+			</FieldLabel>
+			<div className="flex gap-2">
+				<Input id={id} placeholder={placeholder} autoComplete="off" className={inputCls} />
+				<Button
+					type="button"
+					variant="outline"
+					size="icon"
+					aria-label={`Add to ${label}`}
+					className="size-11 rounded-lg"
+				>
+					<Plus className="size-4.5" />
+				</Button>
+			</div>
+			<ul className="mt-1 flex flex-col gap-1.5">
+				{items.map((item, i) => (
+					<li
+						key={item}
+						className="flex items-center gap-2.5 rounded-lg border border-border bg-muted px-3 py-2 text-[14px]"
+					>
+						{numbered && (
+							<span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-accent text-[12px] font-semibold text-accent-foreground">
+								{i + 1}
+							</span>
+						)}
+						<span className="flex-1">{item}</span>
+						<button
+							type="button"
+							aria-label={`Remove ${item}`}
+							className="flex size-7 items-center justify-center rounded-md text-muted-foreground hover:bg-background hover:text-destructive"
+						>
+							<X className="size-4" />
+						</button>
+					</li>
+				))}
+			</ul>
+		</Field>
+	);
+}
+
+/* ───────── page ───────── */
 
 export default function AddTour() {
 	return (
-		<div className="flex w-full flex-col gap-5">
-			{/* Header + Add button */}
-			<div className="flex flex-wrap items-end justify-between gap-3.5">
+		<div className="mx-auto flex w-full max-w-4xl flex-col gap-5">
+			{/* Page header */}
+			<div className="flex flex-col gap-3">
+				<Link
+					to="/admin/tours"
+					className="inline-flex w-fit items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground"
+				>
+					<ArrowLeft className="size-4" />
+					Back to tours
+				</Link>
 				<div>
-					<h1 className="text-3xl font-bold tracking-tight">Tours</h1>
-					<p className="text-muted-foreground">{tours.length} tours · each has a public page at /tours/slug</p>
+					<h1 className="text-3xl font-bold tracking-tight">Add tour</h1>
+					<p className="text-muted-foreground">Fill in the details below. Fields marked * are required.</p>
 				</div>
-				<AddTourModal />
 			</div>
 
-			{/* Table */}
-			<section className="overflow-hidden rounded-xl border border-border bg-card shadow-card">
-				<div className="overflow-x-auto">
-					<table className="w-full min-w-[960px] border-collapse text-left text-sm">
-						<thead className="bg-muted">
-							<tr className="text-[13px] font-semibold text-muted-foreground">
-								<th scope="col" className="w-14 px-4.5 py-3">
-									#
-								</th>
-								<th scope="col" className="px-4.5 py-3">
-									Tour
-								</th>
-								<th scope="col" className="px-4.5 py-3">
-									Division
-								</th>
-								<th scope="col" className="px-4.5 py-3">
-									Type
-								</th>
-								<th scope="col" className="px-4.5 py-3">
-									Dates
-								</th>
-								<th scope="col" className="px-4.5 py-3 text-right">
-									Price from
-								</th>
-								<th scope="col" className="px-4.5 py-3 text-center">
-									Guests
-								</th>
-								<th scope="col" className="px-4.5 py-3 text-right">
-									Actions
-								</th>
-							</tr>
-						</thead>
+			<form id="add-tour" className="flex flex-col gap-5">
+				{/* ── 1. Basic info ── */}
+				<Section title="Basic info">
+					<Field className="gap-1.5">
+						<FieldLabel htmlFor="tour-title" className="text-sm font-semibold">
+							Title *
+						</FieldLabel>
+						<Input id="tour-title" placeholder="e.g. Sajek Valley 3-Day Escape" className={inputCls} />
+						<FieldDescription className="text-[13px]">Slug: /tours/sajek-valley-3-day-escape</FieldDescription>
+					</Field>
 
-						<tbody>
-							{tours.map((tour, index) => (
-								<tr key={tour._id} className="border-t border-border transition-colors hover:bg-muted/60">
-									<td className="px-4.5 py-3 text-muted-foreground">{index + 1}</td>
+					<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+						<Field className="gap-1.5">
+							<FieldLabel htmlFor="tour-division" className="text-sm font-semibold">
+								Division *
+							</FieldLabel>
+							<SearchableSelect
+								id="tour-division"
+								options={divisionOptions}
+								placeholder="Select a division"
+								searchPlaceholder="Search division…"
+								emptyText="No division found."
+							/>
+						</Field>
 
-									{/* Cover + title + location */}
-									<td className="px-4.5 py-3">
-										<div className="flex items-center gap-3">
-											<div className="flex h-12 w-18 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-accent text-accent-foreground">
-												{tour.images[0] ? (
-													<img
-														src={tour.images[0]}
-														alt={tour.title}
-														loading="lazy"
-														className="size-full object-cover"
-													/>
-												) : (
-													<ImageIcon className="size-4.5" />
-												)}
-											</div>
-											<div className="min-w-0">
-												<p className="max-w-64 truncate font-semibold text-foreground" title={tour.title}>
-													{tour.title}
-												</p>
-												<p className="flex items-center gap-1 text-[13px] text-muted-foreground">
-													<MapPin className="size-3.5 shrink-0" />
-													<span className="truncate">{tour.location}</span>
-												</p>
-											</div>
-										</div>
-									</td>
+						<Field className="gap-1.5">
+							<FieldLabel htmlFor="tour-type" className="text-sm font-semibold">
+								Tour type *
+							</FieldLabel>
+							<SearchableSelect
+								id="tour-type"
+								options={tourTypeOptions}
+								placeholder="Select a tour type"
+								searchPlaceholder="Search tour type…"
+								emptyText="No tour type found."
+							/>
+						</Field>
+					</div>
 
-									<td className="px-4.5 py-3 text-foreground">{tour.division.name}</td>
+					<Field className="gap-1.5">
+						<FieldLabel htmlFor="tour-desc" className="text-sm font-semibold">
+							Description
+						</FieldLabel>
+						<Textarea
+							id="tour-desc"
+							placeholder="What makes this tour special…"
+							className="min-h-32 resize-y rounded-lg px-3.5 py-2.5 text-[15px]"
+						/>
+					</Field>
+				</Section>
 
-									<td className="px-4.5 py-3">
-										<span className="inline-flex items-center rounded-full bg-accent px-2.5 py-0.5 text-[12.5px] font-semibold whitespace-nowrap text-accent-foreground">
-											{tour.tourType.name}
-										</span>
-									</td>
+				{/* ── 2. Images ── */}
+				<Section title="Images" description="First image is used as the cover. PNG, JPG or WEBP · max 2 MB each.">
+					<label
+						htmlFor="tour-images"
+						className="flex h-40 cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border bg-muted text-center transition-colors hover:border-primary hover:bg-accent"
+					>
+						<span className="flex size-11 items-center justify-center rounded-full bg-accent text-accent-foreground">
+							<ImagePlus className="size-5" />
+						</span>
+						<span className="text-sm font-semibold text-foreground">Click or drag images here</span>
+						<span className="text-[12.5px] text-muted-foreground">You can select multiple files</span>
+					</label>
+					<input id="tour-images" type="file" accept="image/*" multiple className="sr-only" />
 
-									<td className="px-4.5 py-3">
-										<div className="flex items-center gap-1.5 whitespace-nowrap text-muted-foreground">
-											<CalendarDays className="size-3.5 shrink-0" />
-											{tour.startDate === tour.endDate
-												? formatDate(tour.startDate)
-												: `${formatDate(tour.startDate)} – ${formatDate(tour.endDate)}`}
-										</div>
-									</td>
+					{/* preview grid (static placeholders) */}
+					<div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+						{["cover.jpg", "view-2.jpg", "camp.jpg"].map((name, i) => (
+							<div key={name} className="relative aspect-4/3 overflow-hidden rounded-lg border border-border bg-accent">
+								{i === 0 && (
+									<span className="absolute top-2 left-2 rounded-md bg-primary px-2 py-0.5 text-[11px] font-semibold text-primary-foreground">
+										Cover
+									</span>
+								)}
+								<button
+									type="button"
+									aria-label={`Remove ${name}`}
+									className="absolute top-2 right-2 flex size-7 items-center justify-center rounded-full bg-black/60 text-white hover:bg-black/80"
+								>
+									<X className="size-3.5" />
+								</button>
+								<span className="absolute inset-x-0 bottom-0 truncate bg-linear-to-t from-black/60 to-transparent px-2 pt-4 pb-1.5 text-[11.5px] text-white">
+									{name}
+								</span>
+							</div>
+						))}
+					</div>
+				</Section>
 
-									<td className="px-4.5 py-3 text-right font-semibold whitespace-nowrap text-foreground">
-										{formatPrice(tour.costFrom)}
-									</td>
+				{/* ── 3. Location & dates ── */}
+				<Section title="Location & dates">
+					<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+						<Field className="gap-1.5 sm:col-span-2">
+							<FieldLabel htmlFor="tour-location" className="text-sm font-semibold">
+								Location
+							</FieldLabel>
+							<Input id="tour-location" placeholder="e.g. Sajek, Rangamati" className={inputCls} />
+						</Field>
+						<Field className="gap-1.5">
+							<FieldLabel htmlFor="tour-departure" className="text-sm font-semibold">
+								Departure location
+							</FieldLabel>
+							<Input id="tour-departure" placeholder="e.g. Dhaka (Arambagh)" className={inputCls} />
+						</Field>
+						<Field className="gap-1.5">
+							<FieldLabel htmlFor="tour-arrival" className="text-sm font-semibold">
+								Arrival location
+							</FieldLabel>
+							<Input id="tour-arrival" placeholder="e.g. Sajek Valley" className={inputCls} />
+						</Field>
+						<Field className="gap-1.5">
+							<FieldLabel htmlFor="tour-start" className="text-sm font-semibold">
+								Start date
+							</FieldLabel>
+							<Input id="tour-start" type="date" className={inputCls} />
+						</Field>
+						<Field className="gap-1.5">
+							<FieldLabel htmlFor="tour-end" className="text-sm font-semibold">
+								End date
+							</FieldLabel>
+							<Input id="tour-end" type="date" className={inputCls} />
+						</Field>
+					</div>
+				</Section>
 
-									<td className="px-4.5 py-3">
-										<div className="flex items-center justify-center gap-1.5 text-muted-foreground">
-											<Users className="size-3.5" />
-											{tour.maxGuest}
-										</div>
-									</td>
+				{/* ── 4. Pricing & guests ── */}
+				<Section title="Pricing & guests">
+					<div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+						<Field className="gap-1.5">
+							<FieldLabel htmlFor="tour-cost" className="text-sm font-semibold">
+								Cost from (৳)
+							</FieldLabel>
+							<Input id="tour-cost" type="number" min={0} placeholder="5500" className={inputCls} />
+						</Field>
+						<Field className="gap-1.5">
+							<FieldLabel htmlFor="tour-max-guest" className="text-sm font-semibold">
+								Max guests
+							</FieldLabel>
+							<Input id="tour-max-guest" type="number" min={1} placeholder="20" className={inputCls} />
+						</Field>
+						<Field className="gap-1.5">
+							<FieldLabel htmlFor="tour-min-age" className="text-sm font-semibold">
+								Min age
+							</FieldLabel>
+							<Input id="tour-min-age" type="number" min={0} placeholder="12" className={inputCls} />
+						</Field>
+					</div>
+				</Section>
 
-									<td className="px-4.5 py-3">
-										<div className="flex justify-end gap-2">
-											<Button
-												variant="outline"
-												size="icon"
-												type="button"
-												aria-label={`Edit ${tour.title}`}
-												className="size-9 rounded-lg"
-											>
-												<Pencil className="size-4" />
-											</Button>
+				{/* ── 5. What's included ── */}
+				<Section title="What's included">
+					<div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+						<ListField
+							id="tour-included"
+							label="Included"
+							placeholder="e.g. AC bus ticket"
+							items={["AC bus ticket", "2 nights resort stay"]}
+						/>
+						<ListField
+							id="tour-excluded"
+							label="Excluded"
+							placeholder="e.g. Personal expenses"
+							items={["Personal expenses"]}
+						/>
+						<ListField id="tour-amenities" label="Amenities" placeholder="e.g. Wi-Fi" items={["Wi-Fi", "Breakfast"]} />
+					</div>
+				</Section>
 
-											<DeleteConfirmation
-												itemName={tour.title}
-												description="This removes the tour and its public page. Existing bookings may be affected."
-												onConfirm={() => console.log("delete", tour._id)}
-											>
-												<Button
-													variant="outline"
-													size="icon"
-													type="button"
-													aria-label={`Delete ${tour.title}`}
-													className="size-9 rounded-lg text-destructive hover:text-destructive"
-												>
-													<Trash2 className="size-4" />
-												</Button>
-											</DeleteConfirmation>
-										</div>
-									</td>
-								</tr>
-							))}
-						</tbody>
-					</table>
+				{/* ── 6. Tour plan ── */}
+				<Section title="Tour plan" description="Add each day or step in order.">
+					<ListField
+						id="tour-plan"
+						label="Plan"
+						placeholder="e.g. Day 1: Dhaka → Khagrachari, then jeep to Sajek"
+						items={["Day 1: Dhaka → Khagrachari → Sajek", "Day 2: Konglak hill sunrise, local village walk"]}
+						numbered
+					/>
+				</Section>
+
+				{/* ── Sticky action bar ── */}
+				<div className="sticky bottom-0 z-10 -mx-4 flex justify-end gap-2.5 border-t border-border bg-background/95 px-4 py-3.5 backdrop-blur">
+					<Button asChild variant="outline" className="h-11 rounded-lg px-4 font-semibold">
+						<Link to="/admin/tours">Cancel</Link>
+					</Button>
+					<Button type="submit" className="h-11 rounded-lg px-5 font-semibold">
+						Save tour
+					</Button>
 				</div>
-
-				{/* Footer */}
-				<div className="flex items-center justify-between gap-3 border-t border-border bg-muted px-4.5 py-3 text-[13.5px] text-muted-foreground">
-					<span>Showing {tours.length} tours</span>
-				</div>
-			</section>
+			</form>
 		</div>
 	);
 }
