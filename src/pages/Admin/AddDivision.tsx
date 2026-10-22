@@ -42,7 +42,7 @@ export default function AddDivision() {
 			{/* Table */}
 			<section className="overflow-hidden rounded-xl border border-border bg-card shadow-card">
 				<div className="overflow-x-auto">
-					<table className="w-full min-w-[680px] border-collapse text-left text-sm">
+					<table className="w-full min-w-170 border-collapse text-left text-sm">
 						<thead className="bg-muted">
 							<tr className="text-[13px] font-semibold text-muted-foreground">
 								<th scope="col" className="w-14 px-4.5 py-3">
