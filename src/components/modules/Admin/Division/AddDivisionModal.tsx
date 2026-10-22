@@ -13,9 +13,13 @@ import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui
 import ImageUploader from "@/components/ui/image-uploader";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { useAddDivisionMutation } from "@/redux/features/Division/division.api";
+import type { TApiError } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { toast } from "sonner";
 import * as z from "zod";
 
 const MAX_SIZE = 1 * 1024 * 1024; // 1 MB
@@ -46,31 +50,47 @@ const makeSlug = (text: string) =>
 		.replace(/-+/g, "-");
 
 export default function AddDivisionModal() {
+	const [open, setOpen] = useState(false);
+	const [addDivision, { isLoading }] = useAddDivisionMutation();
+
 	const form = useForm<FormValues>({
 		resolver: zodResolver(formSchema),
-		defaultValues: {
-			name: "",
-			description: "",
-			thumbnail: undefined,
-		},
+		defaultValues: { name: "", description: "", thumbnail: undefined },
 	});
 
 	const name = form.watch("name");
 
-	const onSubmit = (data: FormValues) => {
-		console.log({ ...data, slug: makeSlug(data.name) });
-		// file details
-		if (data.thumbnail) {
-			console.log("Thumbnail:", {
-				name: data.thumbnail.name,
-				type: data.thumbnail.type,
-				size: `${(data.thumbnail.size / 1024).toFixed(1)} KB`,
-			});
+	const onSubmit = async (data: FormValues) => {
+		const formData = new FormData();
+		formData.append(
+			"data",
+			JSON.stringify({ name: data.name, slug: makeSlug(data.name), description: data.description }),
+		);
+		if (data.thumbnail) formData.append("file", data.thumbnail);
+
+		const toastId = toast.loading("Uploading division…");
+
+		try {
+			const res = await addDivision(formData).unwrap();
+			console.log(res);
+			toast.success("Division added", { id: toastId });
+			form.reset();
+			setOpen(false);
+		} catch (err) {
+			const error = err as TApiError;
+			toast.error(error.data?.message || "Failed to add division", { id: toastId });
 		}
 	};
 
+	// block closing while uploading, reset form when closed
+	const handleOpenChange = (value: boolean) => {
+		if (isLoading) return;
+		setOpen(value);
+		if (!value) form.reset();
+	};
+
 	return (
-		<Dialog>
+		<Dialog open={open} onOpenChange={handleOpenChange}>
 			<DialogTrigger asChild>
 				<Button type="button" className="h-11 gap-2 rounded-lg px-4 text-[14.5px] font-semibold">
 					<Plus className="size-4.5" strokeWidth={2.4} />
@@ -78,7 +98,7 @@ export default function AddDivisionModal() {
 				</Button>
 			</DialogTrigger>
 
-			<DialogContent className="max-h-[90vh] gap-0 overflow-y-auto rounded-xl p-0 sm:max-w-[480px]">
+			<DialogContent className="max-h-[90vh] gap-0 overflow-x-hidden overflow-y-auto rounded-xl p-0 sm:max-w-120">
 				<DialogHeader className="border-b border-border px-5.5 py-4.5 text-left">
 					<DialogTitle className="text-lg font-bold">Add division</DialogTitle>
 					<DialogDescription className="text-[13.5px]">
@@ -87,97 +107,111 @@ export default function AddDivisionModal() {
 				</DialogHeader>
 
 				<form id="add-division" className="flex flex-col gap-4 px-5.5 py-5" onSubmit={form.handleSubmit(onSubmit)}>
-					{/* Thumbnail */}
-					<Controller
-						name="thumbnail"
-						control={form.control}
-						render={({ field, fieldState }) => (
-							<Field data-invalid={fieldState.invalid} className="gap-1.5">
-								<FieldLabel htmlFor="dv-thumbnail" className="text-sm font-semibold">
-									Thumbnail
-								</FieldLabel>
-								<ImageUploader
-									id="dv-thumbnail"
-									value={field.value}
-									onChange={field.onChange}
-									onBlur={field.onBlur}
-									invalid={fieldState.invalid}
-								/>
-								<FieldDescription className="text-[13px]">
-									Shown on the home page and the division banner. 1600 × 900 px recommended.
-								</FieldDescription>
-								{fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-							</Field>
-						)}
-					/>
-
-					{/* Name */}
-					<Controller
-						name="name"
-						control={form.control}
-						render={({ field, fieldState }) => (
-							<Field data-invalid={fieldState.invalid} className="gap-1.5">
-								<FieldLabel htmlFor="dv-name" className="text-sm font-semibold">
-									Name
-								</FieldLabel>
-								<Input
-									{...field}
-									id="dv-name"
-									placeholder="e.g. Sylhet"
-									autoComplete="off"
-									aria-invalid={fieldState.invalid}
-									className="h-11 rounded-lg px-3.5 text-[15px]"
-								/>
-								{fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-							</Field>
-						)}
-					/>
-
-					{/* Slug (auto from name) */}
-					<Field className="gap-1.5">
-						<FieldLabel htmlFor="dv-slug" className="text-sm font-semibold">
-							Slug
-						</FieldLabel>
-						<Input
-							id="dv-slug"
-							value={makeSlug(name)}
-							placeholder="sylhet"
-							readOnly
-							className="h-11 rounded-lg bg-muted px-3.5 text-[15px] text-muted-foreground"
+					<fieldset disabled={isLoading} className="flex flex-col gap-4 disabled:opacity-60">
+						{/* Thumbnail */}
+						<Controller
+							name="thumbnail"
+							control={form.control}
+							render={({ field, fieldState }) => (
+								<Field data-invalid={fieldState.invalid} className="gap-1.5">
+									<FieldLabel htmlFor="dv-thumbnail" className="text-sm font-semibold">
+										Thumbnail
+									</FieldLabel>
+									<ImageUploader
+										id="dv-thumbnail"
+										value={field.value}
+										onChange={field.onChange}
+										onBlur={field.onBlur}
+										invalid={fieldState.invalid}
+									/>
+									<FieldDescription className="text-[13px]">
+										Shown on the home page and the division banner. 1600 × 900 px recommended.
+									</FieldDescription>
+									{fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+								</Field>
+							)}
 						/>
-						<FieldDescription className="text-[13px]">Generated automatically from the name.</FieldDescription>
-					</Field>
 
-					{/* Description */}
-					<Controller
-						name="description"
-						control={form.control}
-						render={({ field, fieldState }) => (
-							<Field data-invalid={fieldState.invalid} className="gap-1.5">
-								<FieldLabel htmlFor="dv-desc" className="text-sm font-semibold">
-									Description
-								</FieldLabel>
-								<Textarea
-									{...field}
-									id="dv-desc"
-									placeholder="A short line about what makes this division special…"
-									aria-invalid={fieldState.invalid}
-									className="min-h-25 resize-y rounded-lg px-3.5 py-2.5 text-[15px]"
-								/>
-								{fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-							</Field>
-						)}
-					/>
+						{/* Name */}
+						<Controller
+							name="name"
+							control={form.control}
+							render={({ field, fieldState }) => (
+								<Field data-invalid={fieldState.invalid} className="gap-1.5">
+									<FieldLabel htmlFor="dv-name" className="text-sm font-semibold">
+										Name
+									</FieldLabel>
+									<Input
+										{...field}
+										id="dv-name"
+										placeholder="e.g. Sylhet"
+										autoComplete="off"
+										aria-invalid={fieldState.invalid}
+										className="h-11 rounded-lg px-3.5 text-[15px]"
+									/>
+									{fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+								</Field>
+							)}
+						/>
+
+						{/* Slug (auto from name) */}
+						<Field className="gap-1.5">
+							<FieldLabel htmlFor="dv-slug" className="text-sm font-semibold">
+								Slug
+							</FieldLabel>
+							<Input
+								id="dv-slug"
+								value={makeSlug(name)}
+								placeholder="sylhet"
+								readOnly
+								className="h-11 rounded-lg bg-muted px-3.5 text-[15px] text-muted-foreground"
+							/>
+							<FieldDescription className="text-[13px]">Generated automatically from the name.</FieldDescription>
+						</Field>
+
+						{/* Description */}
+						<Controller
+							name="description"
+							control={form.control}
+							render={({ field, fieldState }) => (
+								<Field data-invalid={fieldState.invalid} className="gap-1.5">
+									<FieldLabel htmlFor="dv-desc" className="text-sm font-semibold">
+										Description
+									</FieldLabel>
+									<Textarea
+										{...field}
+										id="dv-desc"
+										placeholder="A short line about what makes this division special…"
+										aria-invalid={fieldState.invalid}
+										className="min-h-25 resize-y rounded-lg px-3.5 py-2.5 text-[15px]"
+									/>
+									{fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+								</Field>
+							)}
+						/>
+					</fieldset>
 				</form>
 
 				<DialogFooter className="border-t border-border bg-muted px-5.5 py-4">
 					<DialogClose asChild>
-						<Button variant="outline" type="button" className="h-11 rounded-lg px-4 font-semibold">
+						<Button variant="outline" type="button" disabled={isLoading} className="h-11 rounded-lg px-4 font-semibold">
 							Cancel
 						</Button>
 					</DialogClose>
-					<Button type="submit" form="add-division" className="h-11 rounded-lg px-4 font-semibold">
-						Save division
+					<Button
+						type="submit"
+						form="add-division"
+						disabled={isLoading}
+						className="h-11 min-w-36 gap-2 rounded-lg px-4 font-semibold"
+					>
+						{isLoading ? (
+							<>
+								<Loader2 className="size-4 animate-spin" />
+								Uploading…
+							</>
+						) : (
+							"Save division"
+						)}
 					</Button>
 				</DialogFooter>
 			</DialogContent>
