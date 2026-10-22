@@ -1,3 +1,4 @@
+import { DeleteConfirmation } from "@/components/DeleteConfirmation";
 import AddTourTypeForm from "@/components/modules/Admin/TourType/AddTourTypeForm";
 import { Button } from "@/components/ui/button";
 import { useGetTourTypesQuery } from "@/redux/features/Tour/tour.api";
@@ -46,16 +47,19 @@ export default function AddTourTypes() {
 								>
 									<Pencil className="size-4.25" />
 								</Button>
-								<Button
-									variant="outline"
-									size="icon"
-									type="button"
-									title="In use by 46 tours — move them first"
-									aria-label="Delete Short tour — in use by 46 tours"
-									className="size-10 rounded-lg disabled:opacity-40"
-								>
-									<Trash2 className="size-4.25" />
-								</Button>
+
+								<DeleteConfirmation>
+									<Button
+										variant="outline"
+										size="icon"
+										type="button"
+										title="In use by 46 tours — move them first"
+										aria-label="Delete Short tour — in use by 46 tours"
+										className="size-10 rounded-lg disabled:opacity-40"
+									>
+										<Trash2 className="size-4.25" />
+									</Button>
+								</DeleteConfirmation>
 							</li>
 						))}
 
