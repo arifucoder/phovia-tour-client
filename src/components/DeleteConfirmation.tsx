@@ -32,7 +32,7 @@ export function DeleteConfirmation({ children, onConfirm }: IProps) {
 						<Trash2Icon />
 					</AlertDialogMedia>
 					<AlertDialogTitle>Delete chat?</AlertDialogTitle>
-					<AlertDialogDescription>This will permanently delete this chat conversation.</AlertDialogDescription>
+					<AlertDialogDescription>This will permanently delete.</AlertDialogDescription>
 				</AlertDialogHeader>
 				<AlertDialogFooter>
 					<AlertDialogCancel variant="outline">Cancel</AlertDialogCancel>

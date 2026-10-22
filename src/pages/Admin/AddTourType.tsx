@@ -77,28 +77,6 @@ export default function AddTourTypes() {
 								</DeleteConfirmation>
 							</li>
 						))}
-
-						{/* Edit-mode row */}
-						{/* <li className="flex items-center gap-3.5 border-t border-border bg-accent px-[18px] py-3.5">
-							<form className="flex flex-1 flex-wrap items-center gap-2.5">
-								<Label htmlFor="tt-edit" className="sr-only">
-									Tour type name
-								</Label>
-								<Input
-									id="tt-edit"
-									defaultValue="Long tour (3+ days)"
-									className="h-11 flex-[1_1_220px] rounded-lg border-primary bg-card px-3.5 text-[15px]"
-								/>
-								<div className="flex gap-2">
-									<Button variant="outline" type="button" className="h-11 rounded-lg px-4 font-semibold">
-										Cancel
-									</Button>
-									<Button type="submit" className="h-11 rounded-lg px-4 font-semibold">
-										Save
-									</Button>
-								</div>
-							</form>
-						</li> */}
 					</ul>
 
 					<p className="border-t border-border bg-muted px-4.5 py-3 text-[13.5px] text-muted-foreground">
