@@ -32,10 +32,7 @@ export function DeleteConfirmation({ children, onConfirm }: IProps) {
 						<Trash2Icon />
 					</AlertDialogMedia>
 					<AlertDialogTitle>Delete chat?</AlertDialogTitle>
-					<AlertDialogDescription>
-						This will permanently delete this chat conversation. View <a href="#">Settings</a> delete any memories saved
-						during this chat.
-					</AlertDialogDescription>
+					<AlertDialogDescription>This will permanently delete this chat conversation.</AlertDialogDescription>
 				</AlertDialogHeader>
 				<AlertDialogFooter>
 					<AlertDialogCancel variant="outline">Cancel</AlertDialogCancel>
