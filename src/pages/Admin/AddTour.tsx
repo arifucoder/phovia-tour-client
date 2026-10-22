@@ -1,33 +1,73 @@
 import { Button } from "@/components/ui/button";
-import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
+import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import MultiImageUploader from "@/components/ui/multi-image-uploader";
 import SearchableSelect from "@/components/ui/searchable-select";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, ImagePlus, Plus, X } from "lucide-react";
-import type { ReactNode } from "react";
+import { useGetDivisionsQuery } from "@/redux/features/Division/division.api";
+import { useGetTourTypesQuery } from "@/redux/features/Tour/tour.api";
+import type { IDivision, ITourType } from "@/types";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ArrowLeft, Plus, X } from "lucide-react";
+import { useMemo, useState, type KeyboardEvent, type ReactNode } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { Link } from "react-router";
-
-// Static options — later replace with API data
-const divisionOptions = [
-	{ value: "chattogram", label: "Chattogram" },
-	{ value: "sylhet", label: "Sylhet" },
-	{ value: "dhaka", label: "Dhaka" },
-	{ value: "khulna", label: "Khulna" },
-	{ value: "rajshahi", label: "Rajshahi" },
-	{ value: "barishal", label: "Barishal" },
-	{ value: "mymensingh", label: "Mymensingh" },
-	{ value: "rangpur", label: "Rangpur" },
-];
-
-const tourTypeOptions = [
-	{ value: "short", label: "Short tour" },
-	{ value: "long", label: "Long tour (3+ days)" },
-	{ value: "weekend", label: "Weekend getaway" },
-];
+import * as z from "zod";
 
 const inputCls = "h-11 rounded-lg px-3.5 text-[15px]";
 
-/* ───────── small static helpers ───────── */
+/* ───────── schema ───────── */
+
+const MAX_SIZE = 2 * 1024 * 1024; // 2 MB
+const IMAGE_TYPES = ["image/png", "image/jpeg", "image/webp"];
+
+const formSchema = z
+	.object({
+		title: z
+			.string()
+			.trim()
+			.min(3, { error: "Title must be at least 3 characters long." })
+			.max(120, { error: "Title cannot exceed 120 characters." }),
+		division: z.string().min(1, { error: "Please select a division." }),
+		tourType: z.string().min(1, { error: "Please select a tour type." }),
+		description: z.string().trim().optional(),
+		images: z
+			.array(
+				z
+					.instanceof(File)
+					.refine((file) => IMAGE_TYPES.includes(file.type), { error: "Only PNG, JPG or WEBP allowed." })
+					.refine((file) => file.size <= MAX_SIZE, { error: "Each image must be 2 MB or smaller." }),
+			)
+			.max(10, { error: "You can upload up to 10 images." }),
+		location: z.string().trim().optional(),
+		departureLocation: z.string().trim().optional(),
+		arrivalLocation: z.string().trim().optional(),
+		startDate: z.string().optional(),
+		endDate: z.string().optional(),
+		costFrom: z.number({ error: "Enter a valid amount." }).min(0, { error: "Cost can't be negative." }).optional(),
+		maxGuest: z.number({ error: "Enter a valid number." }).int().min(1, { error: "At least 1 guest." }).optional(),
+		minAge: z.number({ error: "Enter a valid number." }).int().min(0, { error: "Age can't be negative." }).optional(),
+		included: z.array(z.string()),
+		excluded: z.array(z.string()),
+		amenities: z.array(z.string()),
+		tourPlan: z.array(z.string()),
+	})
+	.refine((data) => !data.startDate || !data.endDate || data.endDate >= data.startDate, {
+		error: "End date can't be before start date.",
+		path: ["endDate"],
+	});
+
+type FormValues = z.infer<typeof formSchema>;
+
+const makeSlug = (text: string) =>
+	text
+		.toLowerCase()
+		.trim()
+		.replace(/[^a-z0-9\s-]/g, "")
+		.replace(/\s+/g, "-")
+		.replace(/-+/g, "-");
+
+/* ───────── small helpers ───────── */
 
 function Section({ title, description, children }: { title: string; description?: string; children: ReactNode }) {
 	return (
@@ -45,54 +85,87 @@ function ListField({
 	id,
 	label,
 	placeholder,
-	items,
+	value,
+	onChange,
 	numbered = false,
 }: {
 	id: string;
 	label: string;
 	placeholder: string;
-	items: string[];
+	value: string[];
+	onChange: (items: string[]) => void;
 	numbered?: boolean;
 }) {
+	const [draft, setDraft] = useState("");
+
+	const addItem = () => {
+		const text = draft.trim();
+		if (!text || value.includes(text)) return;
+		onChange([...value, text]);
+		setDraft("");
+	};
+
+	const removeItem = (index: number) => onChange(value.filter((_, i) => i !== index));
+
+	// Enter → add item (not submit the whole form)
+	const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+		if (e.key === "Enter") {
+			e.preventDefault();
+			addItem();
+		}
+	};
+
 	return (
 		<Field className="gap-1.5">
 			<FieldLabel htmlFor={id} className="text-sm font-semibold">
 				{label}
 			</FieldLabel>
 			<div className="flex gap-2">
-				<Input id={id} placeholder={placeholder} autoComplete="off" className={inputCls} />
+				<Input
+					id={id}
+					value={draft}
+					onChange={(e) => setDraft(e.target.value)}
+					onKeyDown={handleKeyDown}
+					placeholder={placeholder}
+					autoComplete="off"
+					className={inputCls}
+				/>
 				<Button
 					type="button"
 					variant="outline"
 					size="icon"
+					onClick={addItem}
 					aria-label={`Add to ${label}`}
 					className="size-11 rounded-lg"
 				>
 					<Plus className="size-4.5" />
 				</Button>
 			</div>
-			<ul className="mt-1 flex flex-col gap-1.5">
-				{items.map((item, i) => (
-					<li
-						key={item}
-						className="flex items-center gap-2.5 rounded-lg border border-border bg-muted px-3 py-2 text-[14px]"
-					>
-						{numbered && (
-							<span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-accent text-[12px] font-semibold text-accent-foreground">
-								{i + 1}
-							</span>
-						)}
-						<span className="flex-1">{item}</span>
-						<button
-							type="button"
-							aria-label={`Remove ${item}`}
-							className="flex size-7 items-center justify-center rounded-md text-muted-foreground hover:bg-background hover:text-destructive"
+			{value.length > 0 && (
+				<ul className="mt-1 flex flex-col gap-1.5">
+					{value.map((item, i) => (
+						<li
+							key={item}
+							className="flex items-center gap-2.5 rounded-lg border border-border bg-muted px-3 py-2 text-[14px]"
 						>
-							<X className="size-4" />
-						</button>
-					</li>
-				))}
-			</ul>
+							{numbered && (
+								<span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-accent text-[12px] font-semibold text-accent-foreground">
+									{i + 1}
+								</span>
+							)}
+							<span className="flex-1">{item}</span>
+							<button
+								type="button"
+								onClick={() => removeItem(i)}
+								aria-label={`Remove ${item}`}
+								className="flex size-7 items-center justify-center rounded-md text-muted-foreground hover:bg-background hover:text-destructive"
+							>
+								<X className="size-4" />
+							</button>
+						</li>
+					))}
+				</ul>
+			)}
 		</Field>
 	);
 }
@@ -100,6 +173,70 @@ function ListField({
 /* ───────── page ───────── */
 
 export default function AddTour() {
+	const { data: divisions = [], isLoading: divisionLoading } = useGetDivisionsQuery(undefined);
+	const { data: tourTypes = [], isLoading: tourTypeLoading } = useGetTourTypesQuery(undefined);
+
+	// API data → { value, label } for SearchableSelect
+	const divisionOptions = useMemo(
+		() => (divisions as IDivision[]).map((item) => ({ value: item._id, label: item.name })),
+		[divisions],
+	);
+
+	const tourTypeOptions = useMemo(
+		() => (tourTypes as ITourType[]).map((item) => ({ value: item._id, label: item.name })),
+		[tourTypes],
+	);
+
+	const form = useForm<FormValues>({
+		resolver: zodResolver(formSchema),
+		defaultValues: {
+			title: "",
+			division: "",
+			tourType: "",
+			description: "",
+			images: [],
+			location: "",
+			departureLocation: "",
+			arrivalLocation: "",
+			startDate: "",
+			endDate: "",
+			costFrom: undefined,
+			maxGuest: undefined,
+			minAge: undefined,
+			included: [],
+			excluded: [],
+			amenities: [],
+			tourPlan: [],
+		},
+	});
+
+	const title = form.watch("title");
+
+	const onSubmit = (data: FormValues) => {
+		const { images, ...rest } = data;
+
+		// remove empty strings / empty arrays so backend gets only filled fields
+		const tourData = Object.fromEntries(
+			Object.entries({ ...rest, slug: makeSlug(rest.title) }).filter(
+				([, v]) => v !== "" && v !== undefined && !(Array.isArray(v) && v.length === 0),
+			),
+		);
+
+		console.log("Form values:", data);
+		console.log("Tour data (JSON):", tourData);
+		console.log(
+			"Images:",
+			images.map((f) => ({ name: f.name, type: f.type, size: `${(f.size / 1024).toFixed(1)} KB` })),
+		);
+
+		// what will be sent to the API
+		const formData = new FormData();
+		formData.append("data", JSON.stringify(tourData));
+		images.forEach((file) => formData.append("files", file)); // multerUpload.array("files")
+
+		console.log("FormData entries:", [...formData.entries()]);
+	};
+
 	return (
 		<div className="mx-auto flex w-full max-w-4xl flex-col gap-5">
 			{/* Page header */}
@@ -117,182 +254,296 @@ export default function AddTour() {
 				</div>
 			</div>
 
-			<form id="add-tour" className="flex flex-col gap-5">
+			<form id="add-tour" className="flex flex-col gap-5" onSubmit={form.handleSubmit(onSubmit)}>
 				{/* ── 1. Basic info ── */}
 				<Section title="Basic info">
-					<Field className="gap-1.5">
-						<FieldLabel htmlFor="tour-title" className="text-sm font-semibold">
-							Title *
-						</FieldLabel>
-						<Input id="tour-title" placeholder="e.g. Sajek Valley 3-Day Escape" className={inputCls} />
-						<FieldDescription className="text-[13px]">Slug: /tours/sajek-valley-3-day-escape</FieldDescription>
-					</Field>
+					<Controller
+						name="title"
+						control={form.control}
+						render={({ field, fieldState }) => (
+							<Field data-invalid={fieldState.invalid} className="gap-1.5">
+								<FieldLabel htmlFor="tour-title" className="text-sm font-semibold">
+									Title *
+								</FieldLabel>
+								<Input
+									{...field}
+									id="tour-title"
+									placeholder="e.g. Sajek Valley 3-Day Escape"
+									aria-invalid={fieldState.invalid}
+									className={inputCls}
+								/>
+								<FieldDescription className="text-[13px]">
+									Slug: /tours/{makeSlug(title) || "your-tour-title"}
+								</FieldDescription>
+								{fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+							</Field>
+						)}
+					/>
 
 					<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-						<Field className="gap-1.5">
-							<FieldLabel htmlFor="tour-division" className="text-sm font-semibold">
-								Division *
-							</FieldLabel>
-							<SearchableSelect
-								id="tour-division"
-								options={divisionOptions}
-								placeholder="Select a division"
-								searchPlaceholder="Search division…"
-								emptyText="No division found."
-							/>
-						</Field>
+						<Controller
+							name="division"
+							control={form.control}
+							render={({ field, fieldState }) => (
+								<Field data-invalid={fieldState.invalid} className="gap-1.5">
+									<FieldLabel htmlFor="tour-division" className="text-sm font-semibold">
+										Division *
+									</FieldLabel>
+									<SearchableSelect
+										id="tour-division"
+										options={divisionOptions}
+										value={field.value}
+										onChange={field.onChange}
+										invalid={fieldState.invalid}
+										disabled={divisionLoading}
+										placeholder={divisionLoading ? "Loading divisions…" : "Select a division"}
+										searchPlaceholder="Search division…"
+										emptyText="No division found."
+									/>
+									{fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+								</Field>
+							)}
+						/>
 
-						<Field className="gap-1.5">
-							<FieldLabel htmlFor="tour-type" className="text-sm font-semibold">
-								Tour type *
-							</FieldLabel>
-							<SearchableSelect
-								id="tour-type"
-								options={tourTypeOptions}
-								placeholder="Select a tour type"
-								searchPlaceholder="Search tour type…"
-								emptyText="No tour type found."
-							/>
-						</Field>
+						<Controller
+							name="tourType"
+							control={form.control}
+							render={({ field, fieldState }) => (
+								<Field data-invalid={fieldState.invalid} className="gap-1.5">
+									<FieldLabel htmlFor="tour-type" className="text-sm font-semibold">
+										Tour type *
+									</FieldLabel>
+									<SearchableSelect
+										id="tour-type"
+										options={tourTypeOptions}
+										value={field.value}
+										onChange={field.onChange}
+										invalid={fieldState.invalid}
+										disabled={tourTypeLoading}
+										placeholder={tourTypeLoading ? "Loading tour types…" : "Select a tour type"}
+										searchPlaceholder="Search tour type…"
+										emptyText="No tour type found."
+									/>
+									{fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+								</Field>
+							)}
+						/>
 					</div>
 
-					<Field className="gap-1.5">
-						<FieldLabel htmlFor="tour-desc" className="text-sm font-semibold">
-							Description
-						</FieldLabel>
-						<Textarea
-							id="tour-desc"
-							placeholder="What makes this tour special…"
-							className="min-h-32 resize-y rounded-lg px-3.5 py-2.5 text-[15px]"
-						/>
-					</Field>
+					<Controller
+						name="description"
+						control={form.control}
+						render={({ field, fieldState }) => (
+							<Field data-invalid={fieldState.invalid} className="gap-1.5">
+								<FieldLabel htmlFor="tour-desc" className="text-sm font-semibold">
+									Description
+								</FieldLabel>
+								<Textarea
+									{...field}
+									id="tour-desc"
+									placeholder="What makes this tour special…"
+									className="min-h-32 resize-y rounded-lg px-3.5 py-2.5 text-[15px]"
+								/>
+							</Field>
+						)}
+					/>
 				</Section>
 
 				{/* ── 2. Images ── */}
-				<Section title="Images" description="First image is used as the cover. PNG, JPG or WEBP · max 2 MB each.">
-					<label
-						htmlFor="tour-images"
-						className="flex h-40 cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border bg-muted text-center transition-colors hover:border-primary hover:bg-accent"
-					>
-						<span className="flex size-11 items-center justify-center rounded-full bg-accent text-accent-foreground">
-							<ImagePlus className="size-5" />
-						</span>
-						<span className="text-sm font-semibold text-foreground">Click or drag images here</span>
-						<span className="text-[12.5px] text-muted-foreground">You can select multiple files</span>
-					</label>
-					<input id="tour-images" type="file" accept="image/*" multiple className="sr-only" />
-
-					{/* preview grid (static placeholders) */}
-					<div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-						{["cover.jpg", "view-2.jpg", "camp.jpg"].map((name, i) => (
-							<div key={name} className="relative aspect-4/3 overflow-hidden rounded-lg border border-border bg-accent">
-								{i === 0 && (
-									<span className="absolute top-2 left-2 rounded-md bg-primary px-2 py-0.5 text-[11px] font-semibold text-primary-foreground">
-										Cover
-									</span>
+				<Section title="Images" description="First image is used as the cover.">
+					<Controller
+						name="images"
+						control={form.control}
+						render={({ field, fieldState }) => (
+							<Field data-invalid={fieldState.invalid} className="gap-1.5">
+								<FieldLabel htmlFor="tour-images" className="sr-only">
+									Images
+								</FieldLabel>
+								<MultiImageUploader
+									id="tour-images"
+									value={field.value}
+									onChange={field.onChange}
+									onBlur={field.onBlur}
+									invalid={fieldState.invalid}
+								/>
+								{fieldState.error && (
+									<FieldError>
+										{fieldState.error.message ?? fieldState.error.root?.message ?? "Some images are invalid."}
+									</FieldError>
 								)}
-								<button
-									type="button"
-									aria-label={`Remove ${name}`}
-									className="absolute top-2 right-2 flex size-7 items-center justify-center rounded-full bg-black/60 text-white hover:bg-black/80"
-								>
-									<X className="size-3.5" />
-								</button>
-								<span className="absolute inset-x-0 bottom-0 truncate bg-linear-to-t from-black/60 to-transparent px-2 pt-4 pb-1.5 text-[11.5px] text-white">
-									{name}
-								</span>
-							</div>
-						))}
-					</div>
+							</Field>
+						)}
+					/>
 				</Section>
 
 				{/* ── 3. Location & dates ── */}
 				<Section title="Location & dates">
 					<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-						<Field className="gap-1.5 sm:col-span-2">
-							<FieldLabel htmlFor="tour-location" className="text-sm font-semibold">
-								Location
-							</FieldLabel>
-							<Input id="tour-location" placeholder="e.g. Sajek, Rangamati" className={inputCls} />
-						</Field>
-						<Field className="gap-1.5">
-							<FieldLabel htmlFor="tour-departure" className="text-sm font-semibold">
-								Departure location
-							</FieldLabel>
-							<Input id="tour-departure" placeholder="e.g. Dhaka (Arambagh)" className={inputCls} />
-						</Field>
-						<Field className="gap-1.5">
-							<FieldLabel htmlFor="tour-arrival" className="text-sm font-semibold">
-								Arrival location
-							</FieldLabel>
-							<Input id="tour-arrival" placeholder="e.g. Sajek Valley" className={inputCls} />
-						</Field>
-						<Field className="gap-1.5">
-							<FieldLabel htmlFor="tour-start" className="text-sm font-semibold">
-								Start date
-							</FieldLabel>
-							<Input id="tour-start" type="date" className={inputCls} />
-						</Field>
-						<Field className="gap-1.5">
-							<FieldLabel htmlFor="tour-end" className="text-sm font-semibold">
-								End date
-							</FieldLabel>
-							<Input id="tour-end" type="date" className={inputCls} />
-						</Field>
+						<Controller
+							name="location"
+							control={form.control}
+							render={({ field }) => (
+								<Field className="gap-1.5 sm:col-span-2">
+									<FieldLabel htmlFor="tour-location" className="text-sm font-semibold">
+										Location
+									</FieldLabel>
+									<Input {...field} id="tour-location" placeholder="e.g. Sajek, Rangamati" className={inputCls} />
+								</Field>
+							)}
+						/>
+						<Controller
+							name="departureLocation"
+							control={form.control}
+							render={({ field }) => (
+								<Field className="gap-1.5">
+									<FieldLabel htmlFor="tour-departure" className="text-sm font-semibold">
+										Departure location
+									</FieldLabel>
+									<Input {...field} id="tour-departure" placeholder="e.g. Dhaka (Arambagh)" className={inputCls} />
+								</Field>
+							)}
+						/>
+						<Controller
+							name="arrivalLocation"
+							control={form.control}
+							render={({ field }) => (
+								<Field className="gap-1.5">
+									<FieldLabel htmlFor="tour-arrival" className="text-sm font-semibold">
+										Arrival location
+									</FieldLabel>
+									<Input {...field} id="tour-arrival" placeholder="e.g. Sajek Valley" className={inputCls} />
+								</Field>
+							)}
+						/>
+						<Controller
+							name="startDate"
+							control={form.control}
+							render={({ field }) => (
+								<Field className="gap-1.5">
+									<FieldLabel htmlFor="tour-start" className="text-sm font-semibold">
+										Start date
+									</FieldLabel>
+									<Input {...field} id="tour-start" type="date" className={inputCls} />
+								</Field>
+							)}
+						/>
+						<Controller
+							name="endDate"
+							control={form.control}
+							render={({ field, fieldState }) => (
+								<Field data-invalid={fieldState.invalid} className="gap-1.5">
+									<FieldLabel htmlFor="tour-end" className="text-sm font-semibold">
+										End date
+									</FieldLabel>
+									<Input {...field} id="tour-end" type="date" aria-invalid={fieldState.invalid} className={inputCls} />
+									{fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+								</Field>
+							)}
+						/>
 					</div>
 				</Section>
 
 				{/* ── 4. Pricing & guests ── */}
 				<Section title="Pricing & guests">
 					<div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-						<Field className="gap-1.5">
-							<FieldLabel htmlFor="tour-cost" className="text-sm font-semibold">
-								Cost from (৳)
-							</FieldLabel>
-							<Input id="tour-cost" type="number" min={0} placeholder="5500" className={inputCls} />
-						</Field>
-						<Field className="gap-1.5">
-							<FieldLabel htmlFor="tour-max-guest" className="text-sm font-semibold">
-								Max guests
-							</FieldLabel>
-							<Input id="tour-max-guest" type="number" min={1} placeholder="20" className={inputCls} />
-						</Field>
-						<Field className="gap-1.5">
-							<FieldLabel htmlFor="tour-min-age" className="text-sm font-semibold">
-								Min age
-							</FieldLabel>
-							<Input id="tour-min-age" type="number" min={0} placeholder="12" className={inputCls} />
-						</Field>
+						{(
+							[
+								{ name: "costFrom", id: "tour-cost", label: "Cost from (৳)", placeholder: "5500", min: 0 },
+								{ name: "maxGuest", id: "tour-max-guest", label: "Max guests", placeholder: "20", min: 1 },
+								{ name: "minAge", id: "tour-min-age", label: "Min age", placeholder: "12", min: 0 },
+							] as const
+						).map((item) => (
+							<Controller
+								key={item.name}
+								name={item.name}
+								control={form.control}
+								render={({ field, fieldState }) => (
+									<Field data-invalid={fieldState.invalid} className="gap-1.5">
+										<FieldLabel htmlFor={item.id} className="text-sm font-semibold">
+											{item.label}
+										</FieldLabel>
+										<Input
+											id={item.id}
+											type="number"
+											min={item.min}
+											placeholder={item.placeholder}
+											name={field.name}
+											ref={field.ref}
+											onBlur={field.onBlur}
+											value={field.value ?? ""}
+											// input gives string → convert to number (empty → undefined)
+											onChange={(e) => field.onChange(e.target.value === "" ? undefined : e.target.valueAsNumber)}
+											aria-invalid={fieldState.invalid}
+											className={inputCls}
+										/>
+										{fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+									</Field>
+								)}
+							/>
+						))}
 					</div>
 				</Section>
 
 				{/* ── 5. What's included ── */}
-				<Section title="What's included">
+				<Section title="What's included" description="Type and press Enter (or +) to add.">
 					<div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-						<ListField
-							id="tour-included"
-							label="Included"
-							placeholder="e.g. AC bus ticket"
-							items={["AC bus ticket", "2 nights resort stay"]}
+						<Controller
+							name="included"
+							control={form.control}
+							render={({ field }) => (
+								<ListField
+									id="tour-included"
+									label="Included"
+									placeholder="e.g. AC bus ticket"
+									value={field.value}
+									onChange={field.onChange}
+								/>
+							)}
 						/>
-						<ListField
-							id="tour-excluded"
-							label="Excluded"
-							placeholder="e.g. Personal expenses"
-							items={["Personal expenses"]}
+						<Controller
+							name="excluded"
+							control={form.control}
+							render={({ field }) => (
+								<ListField
+									id="tour-excluded"
+									label="Excluded"
+									placeholder="e.g. Personal expenses"
+									value={field.value}
+									onChange={field.onChange}
+								/>
+							)}
 						/>
-						<ListField id="tour-amenities" label="Amenities" placeholder="e.g. Wi-Fi" items={["Wi-Fi", "Breakfast"]} />
+						<Controller
+							name="amenities"
+							control={form.control}
+							render={({ field }) => (
+								<ListField
+									id="tour-amenities"
+									label="Amenities"
+									placeholder="e.g. Wi-Fi"
+									value={field.value}
+									onChange={field.onChange}
+								/>
+							)}
+						/>
 					</div>
 				</Section>
 
 				{/* ── 6. Tour plan ── */}
 				<Section title="Tour plan" description="Add each day or step in order.">
-					<ListField
-						id="tour-plan"
-						label="Plan"
-						placeholder="e.g. Day 1: Dhaka → Khagrachari, then jeep to Sajek"
-						items={["Day 1: Dhaka → Khagrachari → Sajek", "Day 2: Konglak hill sunrise, local village walk"]}
-						numbered
+					<Controller
+						name="tourPlan"
+						control={form.control}
+						render={({ field }) => (
+							<ListField
+								id="tour-plan"
+								label="Plan"
+								placeholder="e.g. Day 1: Dhaka → Khagrachari, then jeep to Sajek"
+								value={field.value}
+								onChange={field.onChange}
+								numbered
+							/>
+						)}
 					/>
 				</Section>
 

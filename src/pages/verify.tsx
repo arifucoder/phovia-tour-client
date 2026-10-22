@@ -56,6 +56,8 @@ export default function Verify() {
 	};
 
 	const onSubmit = async (data: FormValues) => {
+		if (!email) return;
+
 		const toastId = toast.loading("Verifying OTP...");
 
 		try {
@@ -64,7 +66,6 @@ export default function Verify() {
 			navigate("/login");
 		} catch (err) {
 			toast.error(getErrorMessage(err, "Invalid OTP"), { id: toastId });
-			form.reset({ pin: "" });
 		}
 	};
 
