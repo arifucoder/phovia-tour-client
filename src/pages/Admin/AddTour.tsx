@@ -52,6 +52,14 @@ const formSchema = z
 		amenities: z.array(z.string()),
 		tourPlan: z.array(z.string()),
 	})
+	.refine((data) => !data.startDate || data.startDate >= getToday(), {
+		error: "Start date can't be in the past.",
+		path: ["startDate"],
+	})
+	.refine((data) => !data.endDate || data.endDate >= getToday(), {
+		error: "End date can't be in the past.",
+		path: ["endDate"],
+	})
 	.refine((data) => !data.startDate || !data.endDate || data.endDate >= data.startDate, {
 		error: "End date can't be before start date.",
 		path: ["endDate"],
@@ -66,6 +74,13 @@ const makeSlug = (text: string) =>
 		.replace(/[^a-z0-9\s-]/g, "")
 		.replace(/\s+/g, "-")
 		.replace(/-+/g, "-");
+
+const getToday = () => {
+	const d = new Date();
+	const month = String(d.getMonth() + 1).padStart(2, "0");
+	const day = String(d.getDate()).padStart(2, "0");
+	return `${d.getFullYear()}-${month}-${day}`;
+};
 
 /* ───────── small helpers ───────── */
 
@@ -211,6 +226,9 @@ export default function AddTour() {
 	});
 
 	const title = form.watch("title");
+
+	const today = getToday();
+	const startDate = form.watch("startDate");
 
 	const onSubmit = (data: FormValues) => {
 		const { images, ...rest } = data;
@@ -418,12 +436,26 @@ export default function AddTour() {
 						<Controller
 							name="startDate"
 							control={form.control}
-							render={({ field }) => (
-								<Field className="gap-1.5">
+							render={({ field, fieldState }) => (
+								<Field data-invalid={fieldState.invalid} className="gap-1.5">
 									<FieldLabel htmlFor="tour-start" className="text-sm font-semibold">
 										Start date
 									</FieldLabel>
-									<Input {...field} id="tour-start" type="date" className={inputCls} />
+									<Input
+										{...field}
+										id="tour-start"
+										type="date"
+										min={today}
+										onChange={(e) => {
+											field.onChange(e);
+											// clear end date if it is now before the new start date
+											const end = form.getValues("endDate");
+											if (end && end < e.target.value) form.setValue("endDate", "");
+										}}
+										aria-invalid={fieldState.invalid}
+										className={inputCls}
+									/>
+									{fieldState.invalid && <FieldError errors={[fieldState.error]} />}
 								</Field>
 							)}
 						/>
@@ -435,7 +467,14 @@ export default function AddTour() {
 									<FieldLabel htmlFor="tour-end" className="text-sm font-semibold">
 										End date
 									</FieldLabel>
-									<Input {...field} id="tour-end" type="date" aria-invalid={fieldState.invalid} className={inputCls} />
+									<Input
+										{...field}
+										id="tour-end"
+										type="date"
+										min={startDate || today}
+										aria-invalid={fieldState.invalid}
+										className={inputCls}
+									/>
 									{fieldState.invalid && <FieldError errors={[fieldState.error]} />}
 								</Field>
 							)}
