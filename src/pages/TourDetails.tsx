@@ -1,5 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useUserInfoQuery } from "@/redux/features/auth/auth.api";
+import { useCreateBookingMutation } from "@/redux/features/Booking/booking.api";
 import { useGetSingleTourQuery } from "@/redux/features/Tour/tour.api";
 import type { TApiError } from "@/types";
 import {
@@ -7,6 +9,7 @@ import {
 	Check,
 	Clock,
 	ImageIcon,
+	Loader2,
 	MapPin,
 	MapPinOff,
 	Minus,
@@ -21,7 +24,7 @@ import {
 	X,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
-import { Link, useParams } from "react-router";
+import { Link, useLocation, useNavigate, useParams } from "react-router";
 import { toast } from "sonner";
 
 /* ───────── helpers ───────── */
@@ -104,6 +107,13 @@ export default function TourDetails() {
 	} = useGetSingleTourQuery(slug as string, {
 		skip: !slug,
 	});
+
+	const navigate = useNavigate();
+	const location = useLocation();
+	const { data: userData } = useUserInfoQuery(undefined);
+	const [createBooking, { isLoading: isBooking }] = useCreateBookingMutation();
+
+	const isLoggedIn = Boolean(userData?.data?.email);
 
 	const [guests, setGuests] = useState(1);
 
@@ -205,6 +215,31 @@ export default function TourDetails() {
 			}
 		} catch {
 			// user closed the share sheet — nothing to do
+		}
+	};
+
+	const handleBook = async () => {
+		// not logged in → login, then come back here
+		if (!isLoggedIn) {
+			toast.info("Please log in to book this tour");
+			navigate("/login", { state: { from: location.pathname } });
+			return;
+		}
+
+		const toastId = toast.loading("Creating your booking…");
+		try {
+			const res = await createBooking({ tour: tour._id, guestCount: guests }).unwrap();
+
+			if (res.paymentUrl) {
+				toast.success("Redirecting to payment…", { id: toastId });
+				window.location.href = res.paymentUrl; // go to SSLCommerz
+			} else {
+				toast.error("Payment link not received. Please try again.", { id: toastId });
+			}
+		} catch (err) {
+			const error = err as TApiError;
+			const message = error.data?.message || "Booking failed. Please try again.";
+			toast.error(message, { id: toastId });
 		}
 	};
 
@@ -454,8 +489,20 @@ export default function TourDetails() {
 					)}
 
 					{/* TODO: connect to booking (pass tour._id + guests) */}
-					<Button type="button" className="h-13 rounded-lg text-[15.5px] font-semibold">
-						Book now
+					<Button
+						type="button"
+						onClick={handleBook}
+						disabled={isBooking || tour.costFrom === undefined}
+						className="h-13 gap-2 rounded-lg text-[15.5px] font-semibold"
+					>
+						{isBooking ? (
+							<>
+								<Loader2 className="size-4.5 animate-spin" />
+								Processing…
+							</>
+						) : (
+							"Book now"
+						)}
 					</Button>
 					<p className="text-center text-[12.5px] text-muted-foreground">
 						You review everything before paying · secure checkout in taka
