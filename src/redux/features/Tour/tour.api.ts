@@ -1,6 +1,14 @@
 import { baseApi } from "@/redux/baseApi";
 import type { IMeta, IResponse, ITour } from "@/types";
-type TToursParams = { page?: number; limit?: number; searchTerm?: string };
+type TToursParams = {
+	page?: number;
+	limit?: number;
+	searchTerm?: string; // searches title, description, location
+	sort?: string; // "-createdAt" (default) | "costFrom" | "-costFrom"
+	division?: string; // division _id
+	tourType?: string; // tourType _id
+	fields?: string;
+};
 export const tourApi = baseApi.injectEndpoints({
 	endpoints: (builder) => ({
 		getTours: builder.query<{ data: ITour[]; meta: IMeta }, TToursParams | void>({
