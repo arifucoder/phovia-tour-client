@@ -11,7 +11,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { toast } from "sonner";
 import * as z from "zod";
 
@@ -30,6 +30,8 @@ export default function LoginForm() {
 
 	const [login] = useLoginMutation();
 	const navigate = useNavigate();
+	const location = useLocation();
+	const from = (location.state as { from?: string } | null)?.from ?? "/";
 
 	const form = useForm<FormValues>({
 		resolver: zodResolver(formSchema),
@@ -49,7 +51,7 @@ export default function LoginForm() {
 			const res = await login(userInfo).unwrap();
 			if (res.success) {
 				toast.message("Logged in successfully");
-				navigate("/");
+				navigate(from, { replace: true });
 			}
 		} catch (err) {
 			const error = err as TApiError;
