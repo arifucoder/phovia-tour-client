@@ -5,6 +5,7 @@ import { role } from "@/constants/role";
 import About from "@/pages/About";
 import LoginPage from "@/pages/Login";
 import RegisterPage from "@/pages/Register";
+import Tours from "@/pages/Tours";
 import Unauthorized from "@/pages/Unauthorized";
 import Verify from "@/pages/verify";
 import type { TRole } from "@/types";
@@ -23,6 +24,7 @@ export const router = createBrowserRouter([
 				Component: About,
 				path: "about",
 			},
+			{ Component: Tours, path: "tours" },
 		],
 	},
 	{
