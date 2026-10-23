@@ -3,6 +3,7 @@ import DashboardLayout from "@/components/layout/DashboardLayout";
 
 import { role } from "@/constants/role";
 import About from "@/pages/About";
+import Home from "@/pages/Home";
 import LoginPage from "@/pages/Login";
 import RegisterPage from "@/pages/Register";
 import TourDetails from "@/pages/TourDetails";
@@ -21,6 +22,10 @@ export const router = createBrowserRouter([
 		Component: App,
 		path: "/",
 		children: [
+			{
+				index: true,
+				Component: Home,
+			},
 			{
 				Component: About,
 				path: "about",
