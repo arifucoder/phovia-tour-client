@@ -230,9 +230,14 @@ export default function TourDetails() {
 		try {
 			const res = await createBooking({ tour: tour._id, guestCount: guests }).unwrap();
 
-			if (res.paymentUrl) {
+			const paymentUrl =
+				typeof res.paymentUrl === "string"
+					? res.paymentUrl
+					: (res.paymentUrl as { GatewayPageURL?: string } | undefined)?.GatewayPageURL;
+
+			if (paymentUrl) {
 				toast.success("Redirecting to payment…", { id: toastId });
-				window.location.href = res.paymentUrl; // go to SSLCommerz
+				window.location.href = paymentUrl;
 			} else {
 				toast.error("Payment link not received. Please try again.", { id: toastId });
 			}
