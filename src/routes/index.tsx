@@ -5,6 +5,7 @@ import { role } from "@/constants/role";
 import About from "@/pages/About";
 import Home from "@/pages/Home";
 import LoginPage from "@/pages/Login";
+import PaymentResult from "@/pages/PaymentResult";
 import RegisterPage from "@/pages/Register";
 import TourDetails from "@/pages/TourDetails";
 import Tours from "@/pages/Tours";
@@ -32,6 +33,9 @@ export const router = createBrowserRouter([
 			},
 			{ Component: Tours, path: "tours" },
 			{ Component: TourDetails, path: "tours/:slug" },
+			{ path: "payment/success", element: <PaymentResult status="success" /> },
+			{ path: "payment/fail", element: <PaymentResult status="fail" /> },
+			{ path: "payment/cancel", element: <PaymentResult status="cancel" /> },
 		],
 	},
 	{
